@@ -22,9 +22,11 @@ public class DBConnection {
 	public static void main(String[] args) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM `files`");
+		ResultSet rs = stmt.executeQuery("SELECT `name`, `url`, `md5` FROM `files`");
 		while ( rs.next() ) {
-			System.out.println(rs.getString(1));
+			System.out.println(rs.getString("name"));
+			System.out.println(rs.getString("url"));
+			System.out.println(rs.getString("md5"));
 		}
 		rs.close();
 		stmt.close();

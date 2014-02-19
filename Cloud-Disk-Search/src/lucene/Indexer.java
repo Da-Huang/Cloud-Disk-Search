@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -22,12 +26,22 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import sun.security.jca.GetInstance;
+import database.DBConnection;
 
-public class IndexFiles {
+
+public class Indexer {
+	private static Indexer INSTANCE = null;
+	private Indexer() {};
+	public static Indexer getInstance() {
+		if ( INSTANCE == null ) INSTANCE = new Indexer();
+		return INSTANCE;
+	}
+	
 	public static void main(String[] args) {
 		String indexPath = "path";
 		String docsPath = "D:/input";
-		boolean create = true;
+		boolean create = false;
 		
 		final File docDir = new File(docsPath);
 		Date start = new Date();
@@ -44,7 +58,7 @@ public class IndexFiles {
 			iwc.setRAMBufferSizeMB(256);
 			
 			IndexWriter writer = new IndexWriter(dir, iwc);
-			indexDocs(writer, docDir);
+//			indexDocs(writer, docDir);
 			
 			writer.close();
 			
@@ -56,37 +70,25 @@ public class IndexFiles {
 		}
 	}
 	
-	static void indexDocs(IndexWriter writer, File file) {
-		if ( file.canRead() ) {
-			if ( file.isDirectory() ) {
-				String[] files = file.list();
-				if ( files != null ) {
-					for (int i = 0; i < files.length; i ++) {
-						indexDocs(writer, new File(file, files[i]));
-					}
-				}
-			} else {
-				try {
-					FileInputStream fis = new FileInputStream(file);
-					Document doc = new Document();
-					Field pathField = new StringField("path", file.getName(), Field.Store.YES);
-					doc.add(pathField);
-					doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
-					doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, "utf8"))));
-					
-					if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
-						System.out.println("adding: " + file.getName());
-						writer.addDocument(doc);
-					} else {
-						System.out.println("updating: " + file.getName());
-						writer.updateDocument(new Term("path", file.getCanonicalPath()), doc);
-					}
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-					return;
-				}
-			}
+	void indexDB(IndexWriter writer) throws IOException, SQLException {
+		Connection conn = DBConnection.getConnection();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(
+				"SELECT `name`, `url`, `md5` FROM `files` "
+				+ "LIMIT 0, 10001"
+		);
+		while ( rs.next() ) {
+			Document doc = new Document();
+			Field name = new TextField("name", rs.getString("name"), Field.Store.YES);
+			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
+			Field md5 = new StringField("md5", rs.getString("md5"), Field.Store.YES);
+			doc.add(name);
+			doc.add(url);
+			doc.add(md5);
+			writer.addDocument(doc);
 		}
+		rs.close();
+		stmt.close();
+		conn.close();
 	}
 }

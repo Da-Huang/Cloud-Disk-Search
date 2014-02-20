@@ -32,39 +32,32 @@ public class Indexer {
 		return INSTANCE;
 	}
 	
-	public static void main(String[] args) {
-		String indexPath = "path";
-		String docsPath = "D:/input";
+	public static void main(String[] args) throws SQLException, IOException {
+		String indexPath = "D:/index";
 		boolean create = false;
 		
-		final File docDir = new File(docsPath);
 		Date start = new Date();
-		try {
-			Directory dir = FSDirectory.open(new File(indexPath));
-			Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
-			IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-			
-			if ( create ) {
-				iwc.setOpenMode(OpenMode.CREATE);
-			} else {
-				iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
-			}
-			iwc.setRAMBufferSizeMB(256);
-			
-			IndexWriter writer = new IndexWriter(dir, iwc);
-//			indexDocs(writer, docDir);
-			
-			writer.close();
-			
-			Date end = new Date();
-			System.out.println(end.getTime() - start.getTime() + " total milliseconds.");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		Directory dir = FSDirectory.open(new File(indexPath));
+		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
+		IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
+		
+		if ( create ) {
+			iwc.setOpenMode(OpenMode.CREATE);
+		} else {
+			iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		}
+		iwc.setRAMBufferSizeMB(256);
+		
+		IndexWriter writer = new IndexWriter(dir, iwc);
+		Indexer.getInstance().indexDB(writer);
+		
+		writer.close();
+		
+		Date end = new Date();
+		System.out.println(end.getTime() - start.getTime() + " total milliseconds.");
 	}
 	
-	void indexDB(IndexWriter writer) throws IOException, SQLException {
+	public void indexDB(IndexWriter writer) throws IOException, SQLException {
 		Connection conn = DBConnection.getConnection();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(
@@ -75,10 +68,10 @@ public class Indexer {
 			Document doc = new Document();
 			Field name = new TextField("name", rs.getString("name"), Field.Store.YES);
 			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
-			Field md5 = new StringField("md5", rs.getString("md5"), Field.Store.YES);
+//			Field md5 = new StringField("md5", rs.getString("md5"), Field.Store.YES);
 			doc.add(name);
 			doc.add(url);
-			doc.add(md5);
+//			doc.add(md5);
 			writer.addDocument(doc);
 		}
 		rs.close();

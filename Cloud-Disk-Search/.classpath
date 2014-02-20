@@ -10,6 +10,7 @@
 	<classpathentry kind="lib" path="lib/a-rgs4j-2.0.21.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-queryparser-4.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-analyzers-smartcn-4.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-analyzers-common-4.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

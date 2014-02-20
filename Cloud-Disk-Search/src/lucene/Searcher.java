@@ -20,10 +20,17 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-public class SearchFiles {
+public class Searcher {
+	private Searcher() {}
+	private static Searcher INSTANCE = null;
+	public static Searcher getInstance() {
+		if ( INSTANCE == null ) INSTANCE = new Searcher();
+		return INSTANCE;
+	}
+	
 	public static void main(String[] args) throws IOException, ParseException {
-		String index = "path";
-		String field = "contents";
+		String index = "D:/index";
+		String field = "name";
 		int repeat = 0;
 		boolean raw = false;
 		String queryString = null;
@@ -52,14 +59,14 @@ public class SearchFiles {
 				System.out.println("Time: " + (end.getTime() - start.getTime()) + "ms");
 			}
 			
-			doPagingSearch(in, searcher, query, hitsPerPage, raw, true);
+			Searcher.getInstance().doPagingSearch(in, searcher, query, hitsPerPage, raw, true);
 			
 			if ( queryString != null ) break;
 		}
 		reader.close();
 	}
 	
-	public static void doPagingSearch(BufferedReader in, IndexSearcher searcher,
+	public void doPagingSearch(BufferedReader in, IndexSearcher searcher,
 			Query query, int hitsPerPage, boolean raw, boolean interative) throws IOException {
 
 		TopDocs results = searcher.search(query, 5 * hitsPerPage);
@@ -89,16 +96,8 @@ public class SearchFiles {
 				}
 				
 				Document doc = searcher.doc(hits[i].doc);
-				String path = doc.get("path");
-				if ( path != null ) {
-					System.out.println((i + 1) + ". " + path);
-					String title = doc.get("title");
-					if ( title != null ) {
-						System.out.println("\tTitle: " + doc.get("title"));
-					}
-				} else {
-					System.out.println((i + 1) + ". " + "No path for this document.");
-				}
+				System.out.println((i + 1) + ". " + doc.get("name"));
+				System.out.println("\turl: " + doc.get("url"));
 			}
 		
 			if ( !interative || end == 0 ) break;

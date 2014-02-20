@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.document.Document;
@@ -17,6 +19,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -25,6 +28,7 @@ import database.DBConnection;
 
 
 public class Indexer {
+	private static Logger logger = LogManager.getLogger(Indexer.class.getName());
 	private static Indexer INSTANCE = null;
 	private Indexer() {};
 	public static Indexer getInstance() {
@@ -34,7 +38,7 @@ public class Indexer {
 	
 	public static void main(String[] args) throws SQLException, IOException {
 		String indexPath = "D:/index";
-		boolean create = false;
+		boolean create = true;
 		
 		Date start = new Date();
 		Directory dir = FSDirectory.open(new File(indexPath));
@@ -58,24 +62,32 @@ public class Indexer {
 	}
 	
 	public void indexDB(IndexWriter writer) throws IOException, SQLException {
+		logger.entry();
+		int count = 0;
 		Connection conn = DBConnection.getConnection();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(
 				"SELECT `name`, `url`, `md5` FROM `files` "
-				+ "LIMIT 0, 10001"
+//				+ "LIMIT 0, 1"
 		);
 		while ( rs.next() ) {
 			Document doc = new Document();
 			Field name = new TextField("name", rs.getString("name"), Field.Store.YES);
+//			System.out.println(name);
 			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
-//			Field md5 = new StringField("md5", rs.getString("md5"), Field.Store.YES);
 			doc.add(name);
 			doc.add(url);
-//			doc.add(md5);
-			writer.addDocument(doc);
+			if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
+				writer.addDocument(doc);
+			} else {
+				writer.updateDocument(new Term("url", rs.getString("url")), doc);
+			}
+			count ++;
+			if ( count % 10000 == 0 ) logger.info("index " + count);
 		}
 		rs.close();
 		stmt.close();
 		conn.close();
+		logger.exit();
 	}
 }

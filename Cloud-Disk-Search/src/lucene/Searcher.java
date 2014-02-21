@@ -20,7 +20,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
-import util.Arguments;
+import util.Variables;
 
 public class Searcher {
 	private static Logger logger = LogManager.getLogger(Searcher.class.getName());
@@ -34,7 +34,7 @@ public class Searcher {
 	public static void main(String[] args) throws IOException, ParseException {
 		
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(
-				new File(Arguments.getInstance().getProperties().getProperty("indexPath"))));
+				new File(Variables.getInstance().getProperties().getProperty("indexPath"))));
 		IndexSearcher searcher = new IndexSearcher(reader);
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in, "utf8"));

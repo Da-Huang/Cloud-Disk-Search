@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-import util.Arguments;
+import util.Variables;
 
 
 /**
@@ -43,7 +43,7 @@ public class DBConnection {
 	public static Connection getConnection() throws SQLException {
 		if ( ds == null ) {
 			ds = new BasicDataSource();
-			Properties prop = Arguments.getInstance().getProperties();
+			Properties prop = Variables.getInstance().getProperties();
 			ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
 			ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
 			ds.setUrl(prop.getProperty("url"));

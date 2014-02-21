@@ -6,8 +6,8 @@ import java.util.Properties;
 import database.DBConnection;
 
 
-public class Arguments {
-	private Arguments() {
+public class Variables {
+	private Variables() {
 		try {
 			properties.load(DBConnection.class.getClassLoader().
 					getResource("conf.properties").openStream());
@@ -15,9 +15,9 @@ public class Arguments {
 			e.printStackTrace();
 		}
 	}
-	private static Arguments INSTANCE = null;
-	public static Arguments getInstance() {
-		if ( INSTANCE == null ) INSTANCE = new Arguments();
+	private static Variables INSTANCE = null;
+	public static Variables getInstance() {
+		if ( INSTANCE == null ) INSTANCE = new Variables();
 		return INSTANCE;
 	}
 	

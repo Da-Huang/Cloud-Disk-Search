@@ -12,7 +12,7 @@ import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
-import util.Arguments;
+import util.Variables;
 
 
 public class QueryParser {
@@ -33,7 +33,7 @@ public class QueryParser {
 			query.add(new Term(field, cattr.toString()));
 			System.out.println(cattr.toString());
 		}
-		query.setSlop(Integer.parseInt(Arguments.getInstance().getProperties().getProperty("phraseSlop")));
+		query.setSlop(Integer.parseInt(Variables.getInstance().getProperties().getProperty("phraseSlop")));
 		stream.end();
 		stream.close();
 		analyzer.close();

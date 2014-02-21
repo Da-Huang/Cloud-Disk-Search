@@ -25,7 +25,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-import util.Arguments;
+import util.Variables;
 import database.DBConnection;
 
 
@@ -43,7 +43,7 @@ public class Indexer {
 		
 		Date start = new Date();
 		Directory dir = FSDirectory.open(new File(
-				Arguments.getInstance().getProperties().getProperty("indexPath")));
+				Variables.getInstance().getProperties().getProperty("indexPath")));
 		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
 		IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 		

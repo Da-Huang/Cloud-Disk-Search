@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
@@ -26,6 +28,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 public class Searcher {
+	private static Logger logger = LogManager.getLogger(Searcher.class.getName());
 	private Searcher() {}
 	private static Searcher INSTANCE = null;
 	public static Searcher getInstance() {
@@ -67,7 +70,8 @@ public class Searcher {
 			stream.close();
 			
 //			Query query = parser.parse(line);
-			System.out.println(query);
+			logger.info(query);
+			// field is default
 			System.out.println("Searching for: " + query.toString(field));
 			
 			

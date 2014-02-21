@@ -42,6 +42,7 @@ public class Searcher {
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in, "utf8"));
 		QueryParser parser = new QueryParser(Version.LUCENE_46, field, analyzer);
+		parser.setDefaultOperator(QueryParser.Operator.AND);
 		while ( true ) {
 			if ( queryString == null )
 				System.out.println("Enter query: ");
@@ -49,6 +50,7 @@ public class Searcher {
 			if ( line == null || line.trim().length() == 0 ) break;
 			
 			Query query = parser.parse(line);
+			System.out.println(query);
 			System.out.println("Searching for: " + query.toString(field));
 			
 			if ( repeat > 0 ) {

@@ -14,6 +14,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
@@ -38,7 +39,7 @@ public class Indexer {
 	
 	public static void main(String[] args) throws SQLException, IOException {
 		String indexPath = "D:/index";
-		boolean create = true;
+		boolean create = false;
 		
 		Date start = new Date();
 		Directory dir = FSDirectory.open(new File(indexPath));
@@ -67,7 +68,7 @@ public class Indexer {
 		Connection conn = DBConnection.getConnection();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(
-				"SELECT `name`, `url`, `md5` FROM `files` "
+				"SELECT `name`, `url`, `md5`, `size` FROM `files` "
 //				+ "LIMIT 0, 1"
 		);
 		while ( rs.next() ) {
@@ -75,8 +76,10 @@ public class Indexer {
 			Field name = new TextField("name", rs.getString("name"), Field.Store.YES);
 //			System.out.println(name);
 			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
+			Field size = new NumericDocValuesField("size", rs.getLong("size"));
 			doc.add(name);
 			doc.add(url);
+			doc.add(size);
 			if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
 				writer.addDocument(doc);
 			} else {

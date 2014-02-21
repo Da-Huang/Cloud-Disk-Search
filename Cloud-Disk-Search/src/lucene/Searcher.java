@@ -4,16 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
@@ -49,9 +54,22 @@ public class Searcher {
 			String line = in.readLine();
 			if ( line == null || line.trim().length() == 0 ) break;
 			
-			Query query = parser.parse(line);
+			TokenStream stream = analyzer.tokenStream(null, new StringReader(line));
+			CharTermAttribute cattr = stream.addAttribute(CharTermAttribute.class);
+			stream.reset();
+			PhraseQuery query = new PhraseQuery();
+			while ( stream.incrementToken() ) {
+				query.add(new Term(field, cattr.toString()));
+				System.out.println(cattr.toString());
+			}
+			query.setSlop(10);
+			stream.end();
+			stream.close();
+			
+//			Query query = parser.parse(line);
 			System.out.println(query);
 			System.out.println("Searching for: " + query.toString(field));
+			
 			
 			if ( repeat > 0 ) {
 				Date start = new Date();

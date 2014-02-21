@@ -7,12 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import javax.sound.midi.MidiDevice.Info;
+import net.sf.json.JSONObject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.sf.json.JSONObject;
 
 
 public class TCPWorker implements Runnable {

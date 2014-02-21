@@ -1,6 +1,5 @@
 package database;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +7,8 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
+
+import util.Arguments;
 
 
 /**
@@ -42,18 +43,11 @@ public class DBConnection {
 	public static Connection getConnection() throws SQLException {
 		if ( ds == null ) {
 			ds = new BasicDataSource();
-			try {
-				Properties prop = new Properties();
-				prop.load(DBConnection.class.getClassLoader().
-						getResource("conf.properties").openStream());
-				ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
-				ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
-				ds.setUrl(prop.getProperty("url"));
-				ds.setDriverClassName(prop.getProperty("driverClassName"));
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			Properties prop = Arguments.getInstance().getProperties();
+			ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
+			ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
+			ds.setUrl(prop.getProperty("url"));
+			ds.setDriverClassName(prop.getProperty("driverClassName"));
 		}
 		return ds.getConnection();
 	}

@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import util.Variables;
+
 public class TCPThreadServer implements Runnable {
 	private static Logger logger = LogManager.getLogger(TCPThreadServer.class.getName());
 	private boolean stop = false;
@@ -15,7 +17,7 @@ public class TCPThreadServer implements Runnable {
 	private ServerSocket server = null;
 	
 	public TCPThreadServer() {
-		this(7779);
+		this(Integer.parseInt(Variables.getInstance().getProperties().getProperty("port")));
 	}
 	public TCPThreadServer(int port) {
 		try {

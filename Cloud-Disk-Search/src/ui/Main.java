@@ -54,7 +54,7 @@ public class Main {
 			System.out.println(result);
 			reader.close();
 			
-		} else {
+		} else if ( args4j.doServe ) {
 			new Thread(new TCPThreadServer()).run();
 			while ( true ) Thread.sleep(Long.MAX_VALUE);
 		}

@@ -4,11 +4,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-
+/**
+ * Record Variables
+ * @author dhuang
+ *
+ */
 public class Variables {
 	private Variables() {
 		try {
-			properties.load(new FileInputStream("conf.properties"));
+			properties.load(new FileInputStream("META-INF/conf.properties"));
 //			properties.load(Variables.class.getClassLoader().
 //					getResource("conf.properties").openStream());
 		} catch (IOException e) {

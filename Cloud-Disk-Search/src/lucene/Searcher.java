@@ -65,6 +65,7 @@ public class Searcher {
 			file.put("name", doc.get("name"));
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("size"));
+			list.add(file);
 		}
 		logger.exit("info-len: " + res.toString().length());
 		return res;

@@ -35,7 +35,6 @@ public class QueryParser {
 		PhraseQuery query = new PhraseQuery();
 		while ( stream.incrementToken() ) {
 			query.add(new Term(field, cattr.toString()));
-			System.out.println(cattr.toString());
 		}
 		query.setSlop(Integer.parseInt(Variables.getInstance().getProperties().getProperty("phraseSlop")));
 		stream.end();

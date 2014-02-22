@@ -13,7 +13,8 @@ import util.Variables;
 public class TCPThreadServer implements Runnable {
 	private static Logger logger = LogManager.getLogger(TCPThreadServer.class.getName());
 	private boolean stop = false;
-	private ExecutorService threadPool = Executors.newFixedThreadPool(100);
+	private ExecutorService threadPool = Executors.newFixedThreadPool(
+			Integer.parseInt(Variables.getInstance().getProperties().getProperty("threadNum")));
 	private ServerSocket server = null;
 	
 	public TCPThreadServer() {

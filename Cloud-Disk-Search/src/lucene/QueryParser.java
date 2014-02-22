@@ -3,6 +3,8 @@ package lucene;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
@@ -16,6 +18,7 @@ import util.Variables;
 
 
 public class QueryParser {
+	private static Logger logger = LogManager.getLogger(QueryParser.class.getName());
 	private static QueryParser INSTANCE = null;
 	private QueryParser() {}
 	public static QueryParser getInstance() {
@@ -24,6 +27,7 @@ public class QueryParser {
 	}
 	
 	public Query parseAsField(String qText, String field) throws IOException {
+		logger.entry(qText, field);
 		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
 		TokenStream stream = analyzer.tokenStream(null, new StringReader(qText));
 		CharTermAttribute cattr = stream.addAttribute(CharTermAttribute.class);
@@ -37,6 +41,7 @@ public class QueryParser {
 		stream.end();
 		stream.close();
 		analyzer.close();
+		logger.exit(query);
 		return query;
 	}
 }

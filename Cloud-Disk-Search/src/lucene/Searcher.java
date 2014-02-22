@@ -55,11 +55,9 @@ public class Searcher {
 		final int totalNum = results.totalHits;
 		res.put("totalNum", totalNum);
 		ScoreDoc[] hits = results.scoreDocs;
-		JSONArray list = new JSONArray();
-		res.put("filesList", list);
 		
-		if ( hits.length >= start ) return res;
-		for (int i = start; i < start + size; i ++) {
+		JSONArray list = new JSONArray();
+		for (int i = start; i < start + size && i < hits.length; i ++) {
 			JSONObject file = new JSONObject();
 			Document doc = searcher.doc(hits[i].doc);
 			file.put("name", doc.get("name"));
@@ -67,6 +65,8 @@ public class Searcher {
 			file.put("size", doc.get("size"));
 			list.add(file);
 		}
+		res.put("filesList", list);
+		
 		logger.exit("info-len: " + res.toString().length());
 		return res;
 	}

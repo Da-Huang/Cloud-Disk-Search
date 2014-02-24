@@ -60,7 +60,7 @@ public class Searcher {
 		for (int i = start; i < start + limit && i < hits.length; i ++) {
 			JSONObject file = new JSONObject();
 			Document doc = searcher.doc(hits[i].doc);
-			file.put("name", doc.get("name"));
+			file.put("name", new String(doc.get("name").getBytes(), "utf8"));
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("size"));
 			list.add(file);

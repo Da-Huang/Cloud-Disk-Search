@@ -47,10 +47,10 @@ public class TCPWorker implements Runnable {
 				JSONObject jin = JSONObject.fromObject(request.trim());
 				String query = jin.getString("query").trim();
 				int start = jin.getInt("start");
-				int size  = jin.getInt("size");
+				int limit  = jin.getInt("limit");
 				
 				JSONObject jout = Searcher.getInstance().search(searcher, 
-						QueryParser.getInstance().parseAsField(query, "name"), start, size);
+						QueryParser.getInstance().parseAsField(query, "name"), start, limit);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(client.getOutputStream()));
 				bw.write(jout.toString());

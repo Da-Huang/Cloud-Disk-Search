@@ -48,16 +48,16 @@ public class Searcher {
 	}
 	
 	public JSONObject search(IndexSearcher searcher, Query query,
-				int start, int size) throws IOException {
-		logger.entry(query, start, size);
+				int start, int limit) throws IOException {
+		logger.entry(query, start, limit);
 		JSONObject res = new JSONObject();
-		TopDocs results = searcher.search(query, start + size);
+		TopDocs results = searcher.search(query, start + limit);
 		final int totalNum = results.totalHits;
 		res.put("totalNum", totalNum);
 		ScoreDoc[] hits = results.scoreDocs;
 		
 		JSONArray list = new JSONArray();
-		for (int i = start; i < start + size && i < hits.length; i ++) {
+		for (int i = start; i < start + limit && i < hits.length; i ++) {
 			JSONObject file = new JSONObject();
 			Document doc = searcher.doc(hits[i].doc);
 			file.put("name", doc.get("name"));

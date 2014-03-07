@@ -1,7 +1,7 @@
 package exception;
 
 /**
- * App Excetion.
+ * App Exception.
  * @author dhuang
  *
  */

@@ -2,13 +2,11 @@ package tcp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.zip.GZIPOutputStream;
 
 import lucene.QueryParser;
 import lucene.Searcher;
@@ -21,9 +19,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 
-import exception.AppException;
 import util.Utils;
 import util.Variables;
+import exception.AppException;
 
 
 public class TCPWorker implements Runnable {

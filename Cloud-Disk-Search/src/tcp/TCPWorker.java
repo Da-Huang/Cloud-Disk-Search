@@ -69,7 +69,7 @@ public class TCPWorker implements Runnable {
 							QueryParser.getInstance().parseAsField("mp4", "name"), 0, 100);
 					BufferedWriter bw = new BufferedWriter(
 							new OutputStreamWriter(client.getOutputStream()));
-					bw.write(jout.toString());
+					bw.write(Utils.compress(jout.toString()));
 					bw.close();
 					
 				} else throw new AppException("Type Error.");

@@ -43,7 +43,7 @@ public class Main {
 		}
 		
 		if ( args4j.doIndex ) {
-			Indexer.main(new String [0]);
+			Indexer.main(null);
 			
 		} else if ( args4j.searchQuery != null ) {
 			IndexReader reader = DirectoryReader.open(FSDirectory.open(

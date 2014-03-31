@@ -1,11 +1,9 @@
 package tcp;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import lucene.QueryParser;
@@ -57,20 +55,21 @@ public class TCPWorker implements Runnable {
 					String query = jin.getString("query");
 					int start = jin.getInt("start");
 					int limit  = jin.getInt("limit");
+					String fileType = jin.getString("fileType");
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
-							QueryParser.getInstance().parseAsField(query, "name"), start, limit);
-					BufferedWriter bw = new BufferedWriter(
-							new OutputStreamWriter(client.getOutputStream()));
-					bw.write(Utils.compress(jout.toString()));
-					bw.close();
+							QueryParser.getInstance().parseAsField(query, fileType, "name"), start, limit);
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes()));
+					client.getOutputStream().close();
+					
 				} else if ( type.equals("hot") ) {
+					int start = jin.getInt("start");
+					int limit = jin.getInt("limit");
+					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
-							QueryParser.getInstance().parseAsField("mp4", "name"), 0, 100);
-					BufferedWriter bw = new BufferedWriter(
-							new OutputStreamWriter(client.getOutputStream()));
-					bw.write(Utils.compress(jout.toString()));
-					bw.close();
+							QueryParser.getInstance().parseAsField("mp4", "name"), start, limit);
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes()));
+					client.getOutputStream().close();
 					
 				} else throw new AppException("Type Error.");
 			}

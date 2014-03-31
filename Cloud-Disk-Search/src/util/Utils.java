@@ -20,17 +20,29 @@ public class Utils {
 		System.out.println(gzip.length());
 	}
 	
+	public static byte[] compress(byte[] bytes) {
+		try {
+		    ByteArrayOutputStream out = new ByteArrayOutputStream();
+		    GZIPOutputStream gzip = new GZIPOutputStream(out);
+		    gzip.write(bytes);
+		    gzip.close();
+		    return out.toByteArray();
+		} catch (IOException e) {
+			logger.error("Compress Error.");
+		}
+	    return null;
+	}
 	
 	public static String compress(String str) {
 		try {
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    GZIPOutputStream gzip = new GZIPOutputStream(out);
-		    gzip.write(str.getBytes());
+		    gzip.write(str.getBytes("utf8"));
 		    gzip.close();
-		    return out.toString("utf8");
+		    return out.toString();
 		} catch (IOException e) {
 			logger.error("Compress Error.");
 		}
-	    return "";
+	    return null;
 	}
 }

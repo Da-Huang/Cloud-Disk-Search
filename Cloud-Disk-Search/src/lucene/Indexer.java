@@ -15,6 +15,7 @@ import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
@@ -27,6 +28,7 @@ import org.apache.lucene.util.Version;
 
 import util.Variables;
 import database.DBConnection;
+import database.FileType;
 
 
 public class Indexer {
@@ -39,7 +41,7 @@ public class Indexer {
 	}
 	
 	public static void main(String[] args) throws SQLException, IOException {
-		boolean create = false;
+		boolean create = Boolean.parseBoolean(Variables.getInstance().getProperty("create"));
 		
 		Date start = new Date();
 		Directory dir = FSDirectory.open(new File(
@@ -74,13 +76,22 @@ public class Indexer {
 		);
 		while ( rs.next() ) {
 			Document doc = new Document();
-			Field name = new TextField("name", rs.getString("name"), Field.Store.YES);
+			String fileName = rs.getString("name");
+			
+			Field name = new TextField("name", fileName, Field.Store.YES);
 //			System.out.println(name);
 			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
 			Field size = new NumericDocValuesField("size", rs.getLong("size"));
+			Field storedSize = new StoredField("storedSize", rs.getLong("size"));
 			doc.add(name);
 			doc.add(url);
 			doc.add(size);
+			doc.add(storedSize);
+			
+			String postfix = fileName.substring(fileName.lastIndexOf('.') + 1);
+			Field type = new StringField("type", FileType.getType(postfix), Field.Store.YES);
+			doc.add(type);
+			
 			if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
 				writer.addDocument(doc);
 			} else {

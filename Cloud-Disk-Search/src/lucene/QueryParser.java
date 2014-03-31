@@ -10,8 +10,11 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.util.Version;
 
 import util.Variables;
@@ -40,6 +43,21 @@ public class QueryParser {
 		stream.end();
 		stream.close();
 		analyzer.close();
+		logger.exit(query);
+		return query;
+	}
+	
+	public Query parseAsField(String qText, String fileType, String field) throws IOException {
+		logger.entry(qText, fileType, field);
+		Query textQuery = parseAsField(qText, field);
+		Query query = textQuery;
+		if ( fileType != null ) {
+			Query fileQuery = new TermQuery(new Term("type", fileType));
+			BooleanQuery bQuery = new BooleanQuery();
+			bQuery.add(textQuery, Occur.MUST);
+			bQuery.add(fileQuery, Occur.MUST);
+			query = bQuery;
+		}
 		logger.exit(query);
 		return query;
 	}

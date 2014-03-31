@@ -47,7 +47,7 @@ public class Searcher {
 		reader.close();
 	}
 	
-	public JSONObject search(IndexSearcher searcher, Query query,
+	public JSONObject search(IndexSearcher searcher, Query query, 
 				int start, int limit) throws IOException {
 		logger.entry(query, start, limit);
 		JSONObject res = new JSONObject();
@@ -62,7 +62,9 @@ public class Searcher {
 			Document doc = searcher.doc(hits[i].doc);
 			file.put("name", new String(doc.get("name").getBytes(), "utf8"));
 			file.put("url", doc.get("url"));
-			file.put("size", doc.get("size"));
+			file.put("size", doc.get("storedSize"));
+			file.put("md5", "0123456789abcdef");
+			file.put("download", 1);
 			list.add(file);
 		}
 		res.put("filesList", list);

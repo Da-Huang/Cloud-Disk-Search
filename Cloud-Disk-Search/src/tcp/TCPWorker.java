@@ -65,9 +65,10 @@ public class TCPWorker implements Runnable {
 				} else if ( type.equals("hot") ) {
 					int start = jin.getInt("start");
 					int limit = jin.getInt("limit");
+					String fileType = jin.getString("fileType");
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
-							QueryParser.getInstance().parseAsField("mp4", "name"), start, limit);
+							QueryParser.getInstance().parseAsField("mp4", fileType, "name"), start, limit);
 					client.getOutputStream().write(Utils.compress(jout.toString().getBytes()));
 					client.getOutputStream().close();
 					

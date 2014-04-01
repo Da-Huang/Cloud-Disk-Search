@@ -17,6 +17,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.util.Version;
 
+import database.FileType;
 import util.Variables;
 
 
@@ -49,6 +50,8 @@ public class QueryParser {
 	
 	public Query parseAsField(String qText, String fileType, String field) throws IOException {
 		logger.entry(qText, fileType, field);
+		if ( ! FileType.containsType(fileType) ) fileType = null;
+		
 		Query textQuery = parseAsField(qText, field);
 		Query query = textQuery;
 		if ( fileType != null ) {

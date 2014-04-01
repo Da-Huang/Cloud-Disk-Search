@@ -41,7 +41,7 @@ public class Searcher {
 		String line = in.readLine();
 		if ( line != null ) {
 			JSONObject result = Searcher.getInstance().search(searcher, 
-					QueryParser.getInstance().parseAsField(line.trim(), "name"), 0, 100);
+					QueryParser.getInstance().parseAsField(line.trim(), "video", "name"), 0, 100);
 			System.out.println(result);
 		}
 		reader.close();

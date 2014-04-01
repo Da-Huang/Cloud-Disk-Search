@@ -89,6 +89,8 @@ public class Indexer {
 			doc.add(storedSize);
 			
 			String postfix = fileName.substring(fileName.lastIndexOf('.') + 1);
+//			System.out.println(postfix);
+//			System.out.println(FileType.getType(postfix));
 			Field type = new StringField("type", FileType.getType(postfix), Field.Store.YES);
 			doc.add(type);
 			

@@ -72,14 +72,13 @@ public class Indexer {
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(
 				"SELECT `name`, `url`, `md5`, `size` FROM `files` "
-//				+ "LIMIT 0, 1"
+//				+ "LIMIT 0, 30000"
 		);
 		while ( rs.next() ) {
 			Document doc = new Document();
 			String fileName = rs.getString("name");
 			
 			Field name = new TextField("name", fileName, Field.Store.YES);
-//			System.out.println(name);
 			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
 			Field size = new NumericDocValuesField("size", rs.getLong("size"));
 			Field storedSize = new StoredField("storedSize", rs.getLong("size"));

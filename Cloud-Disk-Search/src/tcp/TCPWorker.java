@@ -42,7 +42,7 @@ public class TCPWorker implements Runnable {
 			IndexSearcher searcher = new IndexSearcher(reader);
 			
 			br = new BufferedReader(
-					new InputStreamReader(client.getInputStream()));
+					new InputStreamReader(client.getInputStream(), "utf8"));
 			String request = br.readLine();
 			logger.info("request: " + request);
 			if ( request != null ) {
@@ -59,7 +59,7 @@ public class TCPWorker implements Runnable {
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
 							QueryParser.getInstance().parseAsField(query, fileType, "name"), start, limit);
-					client.getOutputStream().write(Utils.compress(jout.toString().getBytes()));
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					client.getOutputStream().close();
 					
 				} else if ( type.equals("hot") ) {
@@ -69,7 +69,8 @@ public class TCPWorker implements Runnable {
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
 							QueryParser.getInstance().parseAsField("mp4", fileType, "name"), start, limit);
-					client.getOutputStream().write(Utils.compress(jout.toString().getBytes()));
+					
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					client.getOutputStream().close();
 					
 				} else throw new AppException("Type Error.");

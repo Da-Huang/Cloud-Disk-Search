@@ -1,9 +1,12 @@
 package lucene;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -47,7 +50,7 @@ public class Searcher {
 		reader.close();
 	}
 	
-	public JSONObject search(IndexSearcher searcher, Query query, 
+	public synchronized JSONObject search(IndexSearcher searcher, Query query, 
 				int start, int limit) throws IOException {
 		logger.entry(query, start, limit);
 		JSONObject res = new JSONObject();
@@ -55,19 +58,23 @@ public class Searcher {
 		final int totalNum = results.totalHits;
 		res.put("totalNum", totalNum);
 		ScoreDoc[] hits = results.scoreDocs;
-		
+
+		BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream("a.txt"), "utf8"));
 		JSONArray list = new JSONArray();
 		for (int i = start; i < start + limit && i < hits.length; i ++) {
 			JSONObject file = new JSONObject();
 			Document doc = searcher.doc(hits[i].doc);
-			file.put("name", new String(doc.get("name").getBytes(), "utf8"));
+			file.put("name", new String(doc.get("name").getBytes("utf8"), "utf8"));
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("storedSize"));
 			file.put("md5", "0123456789abcdef");
 			file.put("download", 1);
 			list.add(file);
+			bw.write(new String(doc.get("name").getBytes("utf8"), "utf8") + "\n");
 		}
 		res.put("filesList", list);
+		bw.close();
 		
 		logger.exit("info-len: " + res.toString().length());
 		return res;

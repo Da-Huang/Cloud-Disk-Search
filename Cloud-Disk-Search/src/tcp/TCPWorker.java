@@ -1,10 +1,13 @@
 package tcp;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.zip.GZIPOutputStream;
 
 import lucene.QueryParser;
 import lucene.Searcher;
@@ -17,7 +20,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 
-import util.Utils;
 import util.Variables;
 import exception.AppException;
 
@@ -36,6 +38,7 @@ public class TCPWorker implements Runnable {
 		logger.entry(client);
 		IndexReader reader = null;
 		BufferedReader br = null;
+		BufferedWriter bw = null;
 		try {
 			reader = DirectoryReader.open(FSDirectory.open(
 					new File(Variables.getInstance().getProperties().getProperty("indexPath"))));
@@ -43,7 +46,10 @@ public class TCPWorker implements Runnable {
 			
 			br = new BufferedReader(
 					new InputStreamReader(client.getInputStream(), "utf8"));
+			bw = new BufferedWriter(
+					new OutputStreamWriter(new GZIPOutputStream(client.getOutputStream()), "utf8"));
 			String request = br.readLine();
+			br.close();
 			logger.info("request: " + request);
 			if ( request != null ) {
 				JSONObject jin = JSONObject.fromObject(request.trim());
@@ -59,8 +65,9 @@ public class TCPWorker implements Runnable {
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
 							QueryParser.getInstance().parseAsField(query, fileType, "name"), start, limit);
-					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
-					client.getOutputStream().close();
+//					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
+//					client.getOutputStream().close();
+					bw.write(jout.toString());
 					
 				} else if ( type.equals("hot") ) {
 					int start = jin.getInt("start");
@@ -68,19 +75,19 @@ public class TCPWorker implements Runnable {
 					String fileType = jin.getString("fileType");
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
-							QueryParser.getInstance().parseAsField("mp4", fileType, "name"), start, limit);
+							QueryParser.getInstance().parseHot(fileType), start, limit);
 					
-					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
-					client.getOutputStream().close();
+//					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
+//					client.getOutputStream().close();
+					bw.write(jout.toString());
 					
 				} else throw new AppException("Type Error.");
 			}
-			br.close();
+			bw.close();
 			reader.close();
 			client.close();
 		} catch (AppException e) {
 			try {
-				br.close();
 				reader.close();
 				client.close();
 			} catch (IOException ioe) {

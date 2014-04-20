@@ -88,10 +88,11 @@ public class Indexer {
 			doc.add(storedSize);
 			
 			String postfix = fileName.substring(fileName.lastIndexOf('.') + 1);
-//			System.out.println(postfix);
-//			System.out.println(FileType.getType(postfix));
 			Field type = new StringField("type", FileType.getType(postfix), Field.Store.YES);
 			doc.add(type);
+			
+			Field valid = new StringField("valid", "Y", Field.Store.YES);
+			doc.add(valid);
 			
 			if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
 				writer.addDocument(doc);

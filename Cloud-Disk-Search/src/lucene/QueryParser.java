@@ -30,6 +30,15 @@ public class QueryParser {
 		return INSTANCE;
 	}
 	
+	public Query parseHot(String fileType) {
+		logger.entry(fileType);
+		Query query;
+		if ( fileType != null ) query = new TermQuery(new Term("type", fileType));
+		else query = new TermQuery(new Term("valid", "Y"));
+		logger.exit(query);
+		return query;
+	}
+	
 	public Query parseAsField(String qText, String field) throws IOException {
 		logger.entry(qText, field);
 		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);

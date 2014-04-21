@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.Random;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -93,6 +95,15 @@ public class Indexer {
 			
 			Field valid = new StringField("valid", "Y", Field.Store.YES);
 			doc.add(valid);
+			
+			Field md5 = new StoredField("md5", DigestUtils.md5Hex(fileName + rs.getString("size")));
+			doc.add(md5);
+			
+			long downloadValue = (long) (Math.random() * 1000);
+			Field download = new NumericDocValuesField("download", downloadValue);
+			Field storedDownload = new StoredField("storedDownload", downloadValue);
+			doc.add(download);
+			doc.add(storedDownload);
 			
 			if ( writer.getConfig().getOpenMode() == OpenMode.CREATE ) {
 				writer.addDocument(doc);

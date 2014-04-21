@@ -32,7 +32,7 @@ import database.FileType;
 
 
 public class Indexer {
-	private static Logger logger = LogManager.getLogger(Indexer.class.getName());
+	private static Logger logger = LogManager.getLogger(Indexer.class);
 	private static Indexer INSTANCE = null;
 	private Indexer() {};
 	public static Indexer getInstance() {

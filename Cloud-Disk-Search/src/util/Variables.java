@@ -14,14 +14,10 @@ import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
  *
  */
 public class Variables {
-	private static Logger logger = LogManager.getLogger(Variables.class.getName());
+	private static Logger logger = LogManager.getLogger(Variables.class);
 	private Variables() {
 		try {
 			properties.load(new FileInputStream("META-INF/conf.properties"));
-//			properties.load(Variables.class.getClassLoader().
-//					getResource("conf.properties").openStream());
-			System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, 
-					properties.getProperty("log.conf.path", "META-INF/log4j2.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -34,8 +30,6 @@ public class Variables {
 	
 	public static void main(String[] args) {
 		Variables.getInstance();
-//		System.out.println(Variables.getInstance().getProperties().getProperty("indexPath"));
-		System.out.println(System.getProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY));
 		logger.error("test");
 	}
 	

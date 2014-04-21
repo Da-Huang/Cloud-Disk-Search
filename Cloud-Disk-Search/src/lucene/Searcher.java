@@ -11,22 +11,19 @@ import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
-import database.FileType;
 import util.Variables;
 
 public class Searcher {
-	private static Logger logger = LogManager.getLogger(Searcher.class.getName());
+	private static Logger logger = LogManager.getLogger(Searcher.class);
 	private Searcher() {}
 	private static Searcher INSTANCE = null;
 	public static Searcher getInstance() {
@@ -41,7 +38,7 @@ public class Searcher {
 
 		int start = 10;
 		int limit = 20;
-		System.out.println(Searcher.getInstance().hot(searcher, FileType.VIDEO, start, limit));
+		System.out.println(Searcher.getInstance().hot(searcher, null, start, limit));
 		
 		reader.close();
 	}

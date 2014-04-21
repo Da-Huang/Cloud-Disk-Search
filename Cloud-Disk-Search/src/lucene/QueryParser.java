@@ -22,7 +22,7 @@ import util.Variables;
 
 
 public class QueryParser {
-	private static Logger logger = LogManager.getLogger(QueryParser.class.getName());
+	private static Logger logger = LogManager.getLogger(QueryParser.class);
 	private static QueryParser INSTANCE = null;
 	private QueryParser() {}
 	public static QueryParser getInstance() {

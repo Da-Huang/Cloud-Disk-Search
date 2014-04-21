@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -18,7 +19,7 @@ import net.sf.json.JSONObject;
 
 
 public class Request {
-	private static Logger logger = LogManager.getLogger(Request.class.getName());
+	private static Logger logger = LogManager.getLogger(Request.class);
 	
 	private final static Map<String, String> HEADER = new HashMap<>();
 	static {
@@ -33,7 +34,7 @@ public class Request {
 		HEADER.put("User-Agent", "MMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36");
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Map<String, String> props = new HashMap<String, String>();
 		props.put("hot_type", "0");
 		props.put("start", "0");
@@ -44,7 +45,7 @@ public class Request {
 	}
 	
 	
-	static public JSONObject request(String urlStr, Map<String, String> args) throws IOException {
+	static public JSONObject request(String urlStr, Map<String, String> args) throws Exception {
 		urlStr += "?";
 		for (String key : args.keySet()) {
 			urlStr += key;
@@ -59,7 +60,20 @@ public class Request {
 			conn.setRequestProperty(key, HEADER.get(key));
 		}
 		conn.setRequestMethod("GET");
-		conn.connect();
+		conn.setReadTimeout(1000);
+		conn.setConnectTimeout(1000);
+		boolean succeed = false;
+		int tryTimes = 0;
+		while ( !succeed ) {
+			tryTimes ++;
+			try {
+				conn.connect();
+				succeed = true;
+			} catch (IOException e) {
+				logger.error(e + "--- try#" + tryTimes);
+				Thread.sleep(2000);
+			}
+		}
 		InputStream in = conn.getInputStream();
 		String encoding = conn.getHeaderField("Content-Encoding");
 		if ( encoding != null && encoding.equals("gzip") ) in = new GZIPInputStream(in);

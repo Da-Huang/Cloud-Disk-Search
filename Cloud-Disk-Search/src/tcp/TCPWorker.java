@@ -25,7 +25,7 @@ import exception.AppException;
 
 
 public class TCPWorker implements Runnable {
-	private static Logger logger = LogManager.getLogger(TCPWorker.class.getName());
+	private static Logger logger = LogManager.getLogger(TCPWorker.class);
 	
 	private Socket client = null;
 	
@@ -49,7 +49,6 @@ public class TCPWorker implements Runnable {
 			bw = new BufferedWriter(
 					new OutputStreamWriter(new GZIPOutputStream(client.getOutputStream()), "utf8"));
 			String request = br.readLine();
-			br.close();
 			logger.info("request: " + request);
 			if ( request != null ) {
 				JSONObject jin = JSONObject.fromObject(request.trim());
@@ -73,9 +72,10 @@ public class TCPWorker implements Runnable {
 					int start = jin.getInt("start");
 					int limit = jin.getInt("limit");
 					String fileType = jin.getString("fileType");
+					fileType = fileType.toLowerCase();
+					if ( fileType.equals("all") ) fileType = null;
 					
-					JSONObject jout = Searcher.getInstance().search(searcher, 
-							QueryParser.getInstance().parseHot(fileType), start, limit);
+					JSONObject jout = Searcher.getInstance().hot(searcher, fileType, start, limit);
 					
 //					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 //					client.getOutputStream().close();
@@ -84,6 +84,7 @@ public class TCPWorker implements Runnable {
 				} else throw new AppException("Type Error.");
 			}
 			bw.close();
+			br.close();
 			reader.close();
 			client.close();
 		} catch (AppException e) {
@@ -95,7 +96,7 @@ public class TCPWorker implements Runnable {
 			}
 			logger.error(e);
 		} catch (IOException e) {
-			logger.error("Client Error.");
+			logger.error(e);
 		}
 		logger.exit();
 	}

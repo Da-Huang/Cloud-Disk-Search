@@ -33,15 +33,15 @@ public class Request {
 		HEADER.put("User-Agent", "MMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36");
 	}
 	
-	public static void main(String[] args) throws Exception {
-		Map<String, String> props = new HashMap<String, String>();
-		props.put("hot_type", "0");
-		props.put("start", "0");
-		props.put("limit", "25");
-		JSONObject jo = Request.request(
-				"http://yun.baidu.com/pcloud/friend/gethotuserlist", props);
-		System.out.println(jo);
-	}
+//	public static void main(String[] args) throws Exception {
+//		Map<String, String> props = new HashMap<String, String>();
+//		props.put("hot_type", "0");
+//		props.put("start", "0");
+//		props.put("limit", "25");
+//		JSONObject jo = Request.request(
+//				"http://yun.baidu.com/pcloud/friend/gethotuserlist", props);
+//		System.out.println(jo);
+//	}
 	
 	
 	static public JSONObject request(String urlStr, Map<String, String> args) throws Exception {
@@ -54,26 +54,29 @@ public class Request {
 		}
 		URL url = new URL(urlStr);
 		logger.info(url);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		for (String key : HEADER.keySet()) {
-			conn.setRequestProperty(key, HEADER.get(key));
-		}
-		conn.setRequestMethod("GET");
-		conn.setReadTimeout(1000);
-		conn.setConnectTimeout(1000);
 		boolean succeed = false;
 		int tryTimes = 0;
+		InputStream in = null;
+		HttpURLConnection conn = null;
 		while ( !succeed ) {
 			tryTimes ++;
 			try {
+				conn = (HttpURLConnection) url.openConnection();
+				for (String key : HEADER.keySet()) {
+					conn.setRequestProperty(key, HEADER.get(key));
+				}
+				conn.setRequestMethod("GET");
+				conn.setReadTimeout(1000);
+				conn.setConnectTimeout(1000);
 				conn.connect();
+				in = conn.getInputStream();
 				succeed = true;
 			} catch (IOException e) {
 				logger.error(e + "--- try#" + tryTimes);
+				conn.disconnect();
 				Thread.sleep(2000);
 			}
 		}
-		InputStream in = conn.getInputStream();
 		String encoding = conn.getHeaderField("Content-Encoding");
 		if ( encoding != null && encoding.equals("gzip") ) in = new GZIPInputStream(in);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));

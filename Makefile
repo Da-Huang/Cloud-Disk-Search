@@ -1,7 +1,7 @@
 EMPTY = 
 SPACE = $(EMPTY) $(EMPTY)
 CLASSPATH = $(subst $(SPACE),:,$(wildcard lib/*.jar))
-JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src
+JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src -encoding utf8
 JAVAC = javac
 
 TEXT_TEMPLATE = "\033[36mTEXT\033[0m"
@@ -13,7 +13,11 @@ CLASS_FILES = \
 $(foreach file,$(SOURCE_JAVA),$(patsubst src%.java,bin%.class,$(file))) \
 $(foreach file,$(SOURCE_XML),$(patsubst src%,bin%,$(file)))
 
-all: $(CLASS_FILES)
+all: bin $(CLASS_FILES)
+
+bin:
+	@echo $(subst TEXT,"Making directory $@",$(TEXT_TEMPLATE))
+	mkdir -p bin
 
 bin/%.class: src/%.java
 	@echo $(subst TEXT,"Compiling $< to $@ ...",$(TEXT_TEMPLATE))

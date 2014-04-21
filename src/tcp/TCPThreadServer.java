@@ -30,8 +30,9 @@ public class TCPThreadServer implements Runnable {
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		new Thread(new TCPThreadServer()).run();
-		while ( true ) Thread.sleep(Long.MAX_VALUE);
+		Thread thread = new Thread(new TCPThreadServer());
+		thread.start();
+		thread.join();
 	}
 	
 

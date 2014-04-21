@@ -2,7 +2,6 @@ package lucene;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -73,8 +72,8 @@ public class Searcher {
 			file.put("name", new String(doc.get("name").getBytes("utf8"), "utf8"));
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("storedSize"));
-			file.put("md5", "0123456789abcdef");
-			file.put("download", (long) (Math.random() * 100));
+			file.put("md5", doc.get("md5"));
+			file.put("download", doc.get("StoredDownload"));
 			list.add(file);
 		}
 		res.put("filesList", list);

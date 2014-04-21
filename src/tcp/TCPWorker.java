@@ -1,7 +1,6 @@
 package tcp;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +36,6 @@ public class TCPWorker implements Runnable {
 		logger.entry(client);
 		IndexReader reader = null;
 		BufferedReader br = null;
-		BufferedWriter bw = null;
 		try {
 			reader = DirectoryReader.open(FSDirectory.open(
 					new File(Variables.getInstance().getProperties().getProperty("indexPath"))));

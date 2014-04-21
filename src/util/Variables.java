@@ -6,12 +6,10 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
 /**
  * Record Variables
  * @author dhuang
- *
  */
 public class Variables {
 	private static Logger logger = LogManager.getLogger(Variables.class);

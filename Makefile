@@ -4,29 +4,28 @@ CLASSPATH = $(subst $(SPACE),:,$(wildcard lib/*.jar))
 JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src
 JAVAC = javac
 
-vpath %.class bin
-vpath %.java src
-
 TEXT_TEMPLATE = "\033[36mTEXT\033[0m"
 COMMA = ","
 
-#SOURCE_DIR = $(shell find src -name *.java)
-SOURCE_FILES = $(shell find src -name *.java)
-#SOURCE_FILES = $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*.java))
-#CLASSES = $(foreach dir,$(SOURCE_DIR),$(wildcard $(patsubst src%,bin%,$(dir))/*.class))
+SOURCE_JAVA = $(shell find src -name *.java)
+SOURCE_XML = $(shell find src -name *.xml)
+CLASS_FILES = \
+$(foreach file,$(SOURCE_JAVA),$(patsubst src%.java,bin%.class,$(file))) \
+$(foreach file,$(SOURCE_XML),$(patsubst src%,bin%,$(file)))
 
-build: $(SOURCE_FILES:.java=.class)
+all: $(CLASS_FILES)
 
-%.class: %.java
-	@echo $(subst TEXT,"Compiling $< ...",$(TEXT_TEMPLATE))
+bin/%.class: src/%.java
+	@echo $(subst TEXT,"Compiling $< to $@ ...",$(TEXT_TEMPLATE))
 	$(JAVAC) $(JCFLAGS) $<
-	@echo $@
+
+bin/%.xml: src/%.xml
+	@echo $(subst TEXT,"Coping $< to $@ ...",$(TEXT_TEMPLATE))
+	cp $< $@
 
 clean:
-	@echo $(subst TEXT,"Removing $(TARGET)$(COMMA) Object Files$(COMMA) and Dependency Files.",$(TEXT_TEMPLATE))
-#	$(RM) -r bin/*
-#	@echo $(SOURCE_FILES:.java=.class)
-	@echo $(CLASSPATH)
+	@echo $(subst TEXT,"Removing Class Files.",$(TEXT_TEMPLATE))
+	$(RM) bin/* -r
 	@echo $(subst TEXT,"Clean.",$(TEXT_TEMPLATE))
 
-.PHONY: clean
+.PHONY: clean all

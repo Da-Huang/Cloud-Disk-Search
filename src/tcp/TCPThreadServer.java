@@ -14,8 +14,9 @@ public class TCPThreadServer implements Runnable {
 	private static Logger logger = LogManager.getLogger(TCPThreadServer.class);
 	
 	private boolean stop = false;
-	private ExecutorService threadPool = Executors.newFixedThreadPool(
-			Integer.parseInt(Variables.getInstance().getProperties().getProperty("threadNum")));
+	private static final int maxThreadsNum = Integer.parseInt(
+			Variables.getInstance().getProperty("threadNum"));
+	private ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
 	private ServerSocket server = null;
 	
 	public TCPThreadServer() {

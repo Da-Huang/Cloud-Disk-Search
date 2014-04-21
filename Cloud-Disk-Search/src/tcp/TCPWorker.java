@@ -5,9 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.zip.GZIPOutputStream;
 
 import lucene.QueryParser;
 import lucene.Searcher;
@@ -20,6 +18,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 
+import util.Utils;
 import util.Variables;
 import exception.AppException;
 
@@ -46,9 +45,8 @@ public class TCPWorker implements Runnable {
 			
 			br = new BufferedReader(
 					new InputStreamReader(client.getInputStream(), "utf8"));
-			bw = new BufferedWriter(
-					new OutputStreamWriter(new GZIPOutputStream(client.getOutputStream()), "utf8"));
 			String request = br.readLine();
+			
 			logger.info("request: " + request);
 			if ( request != null ) {
 				JSONObject jin = JSONObject.fromObject(request.trim());
@@ -64,9 +62,7 @@ public class TCPWorker implements Runnable {
 					
 					JSONObject jout = Searcher.getInstance().search(searcher, 
 							QueryParser.getInstance().parseAsField(query, fileType, "name"), start, limit);
-//					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
-//					client.getOutputStream().close();
-					bw.write(jout.toString());
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					
 				} else if ( type.equals("hot") ) {
 					int start = jin.getInt("start");
@@ -76,14 +72,10 @@ public class TCPWorker implements Runnable {
 					if ( fileType.equals("all") ) fileType = null;
 					
 					JSONObject jout = Searcher.getInstance().hot(searcher, fileType, start, limit);
-					
-//					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
-//					client.getOutputStream().close();
-					bw.write(jout.toString());
+					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					
 				} else throw new AppException("Type Error.");
 			}
-			bw.close();
 			br.close();
 			reader.close();
 			client.close();

@@ -110,7 +110,7 @@ public class UserSet {
 		}
 	}
 	
-	public List<User> getUsers(int limit) {
+	public List<User> getUndealingUsers(int limit) {
 		List<User> users = new ArrayList<User>();
 		try {
 			Connection conn = DBConnection.getConnection();

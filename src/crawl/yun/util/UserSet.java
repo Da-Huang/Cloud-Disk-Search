@@ -59,7 +59,7 @@ public class UserSet {
 		}
 	}
 	
-	public boolean add(long uk, String uname, int follows, int fans, int shares) {
+	public synchronized boolean add(long uk, String uname, int follows, int fans, int shares) {
 		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
 //		boolean locked = false;
@@ -89,7 +89,7 @@ public class UserSet {
 		return res;
 	}
 	
-	public void setDealing(long uk, boolean dealing) {
+	public synchronized void setDealing(long uk, boolean dealing) {
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
@@ -103,7 +103,7 @@ public class UserSet {
 		}
 	}
 
-	public void setCrawled(long uk, boolean crawled) {
+	public synchronized void setCrawled(long uk, boolean crawled) {
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
@@ -117,7 +117,7 @@ public class UserSet {
 		}
 	}
 	
-	public List<User> getUndealingUsers(int limit) {
+	public synchronized List<User> getUndealingUsers(int limit) {
 		List<User> users = new ArrayList<User>();
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -141,7 +141,7 @@ public class UserSet {
 		return users;
 	}
 	
-	public int uncrawledSize() {
+	public synchronized int uncrawledSize() {
 		int size = 0;
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -159,7 +159,7 @@ public class UserSet {
 		return size;
 	}
 	
-	public int size() {
+	public synchronized int size() {
 		int size = 0;
 		try {
 			Connection conn = DBConnection.getConnection();

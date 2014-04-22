@@ -17,6 +17,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import crawl.yun.UserCrawler;
 import tcp.TCPThreadServer;
 import util.Variables;
 
@@ -30,6 +31,9 @@ class Args4J {
 	
 	@Option(name = "-serve", usage = "Run The Searching Server.")
 	boolean doServe;
+
+	@Option(name = "-crawl-users", usage = "Crawl users.")
+	boolean crawlUsers;
 }
 
 public class Main {
@@ -55,8 +59,12 @@ public class Main {
 			reader.close();
 			
 		} else if ( args4j.doServe ) {
-			new Thread(new TCPThreadServer()).run();
-			while ( true ) Thread.sleep(Long.MAX_VALUE);
+			Thread thread = new Thread(new TCPThreadServer());
+			thread.start();
+			thread.join();
+		
+		} else if ( args4j.crawlUsers ) {
+			UserCrawler.crawl();
 		}
 	}
 }

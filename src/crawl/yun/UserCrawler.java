@@ -17,6 +17,7 @@ public class UserCrawler {
 	
 	public static void main(String[] args) throws Exception {
 		UserCrawler.crawl();
+//		UserSet.getInstance().add(4215276877L, "同桌的妳Movie", 0, 8936, 2);
 	}
 	
 	/**

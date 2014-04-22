@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.sqlite.SQLiteErrorCode;
 
 import crawl.yun.User;
 import database.DBConnection;
@@ -63,24 +62,24 @@ public class UserSet {
 	public boolean add(long uk, String uname, int follows, int fans, int shares) {
 		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
-		boolean locked = false;
+//		boolean locked = false;
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
-			do {
+//			do {
 				try {
 					stmt.executeUpdate(String.format(""
 							+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
 							+ "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
 				} catch (SQLException e) {
-					logger.error(e);
-					if ( e.getMessage().endsWith("locked") ) {
-						logger.warn("readd " + uname);
-						locked = true;
-					}
+					logger.error(e + " : <" + uk + ":" + uname + ">");
+//					if ( e.toString().trim().endsWith("locked") ) {
+//						logger.warn("readd " + uk + ":" + uname);
+//						locked = true;
+//					}
 					res = false;
 				}
-			} while ( locked );
+//			} while ( locked );
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {

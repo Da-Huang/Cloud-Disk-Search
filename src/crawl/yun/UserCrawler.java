@@ -1,7 +1,6 @@
 package crawl.yun;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONArray;
@@ -17,15 +16,7 @@ public class UserCrawler {
 	private static Logger logger = LogManager.getLogger(UserCrawler.class);
 	
 	public static void main(String[] args) throws Exception {
-//		final Thread thread = new Thread(new UserThreadCrawler());
-//		thread.start();
-//		thread.join();
 		UserCrawler.crawl();
-		List<User> users = UserSet.getInstance().getUndealingUsers(10000000);
-		for (int i = 0; i < users.size(); i ++) {
-			System.out.print(i + 1 + ": ");
-			System.out.println(users.get(i));
-		}
 	}
 	
 	/**
@@ -177,7 +168,7 @@ public class UserCrawler {
 	
 	static public void crawl() {
 		logger.entry();
-		Thread thread = new Thread(new HotUserThreadCrawler());
+		Thread thread = new Thread(new UserThreadCrawler());
 		thread.start();
 		try {
 			thread.join();
@@ -185,14 +176,5 @@ public class UserCrawler {
 			logger.error(e);
 		}
 		logger.exit();
-//		final JSONObject hotType = UserCrawler.fetchHotType();
-//		final JSONArray hots = hotType.getJSONArray("hot_type");
-//		for (int i = 0; i < hots.size(); i ++) {
-//			final JSONObject element = hots.getJSONObject(i);
-//			final String name = element.getString("type_name");
-//			final int type = hots.getJSONObject(i).getInt("type");
-//			logger.info("crawling: " + name);
-//			crawlFirst(type);
-//		}
 	}
 }

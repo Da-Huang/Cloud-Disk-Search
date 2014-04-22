@@ -1,7 +1,54 @@
 package test;
 
+import crawl.yun.util.UserSet;
+
 public class Test {
-	public static void main(String[] args) {
-		System.out.println(String.format("%s", 1L));
+	static class A {
+	    public synchronized void testA() {
+	    	while ( true ) {
+		    	System.out.println("A");
+		    	try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+		    	System.out.println("A-");
+	    	}
+	    }
+	}
+
+	static class B extends A {
+	    public synchronized void testB() {
+	    	while ( true ) {
+		    	System.out.println("B");
+		    	try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+		    	System.out.println("B-");
+	    	}
+	    }
+	}
+
+	public static void main(String[] args) throws InterruptedException {
+//		final A a = new B();
+//		Thread t1 = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				a.testA();
+//			}
+//		});
+//		Thread t2 = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				((B) a).testB();
+//			}
+//		});
+//		t1.start();
+//		t2.start();
+//		t1.join();
+//		t2.join();
+		System.out.println(UserSet.getInstance().size());
 	}
 }

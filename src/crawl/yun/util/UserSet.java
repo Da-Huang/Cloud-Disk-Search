@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sqlite.SQLiteErrorCode;
 
 import crawl.yun.User;
 import database.DBConnection;
@@ -60,19 +61,26 @@ public class UserSet {
 	}
 	
 	public boolean add(long uk, String uname, int follows, int fans, int shares) {
-		logger.entry(uk, uname, follows, fans);
+		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
+		boolean locked = false;
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
-			try {
-				stmt.executeUpdate(String.format(""
-						+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
-						+ "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
-			} catch (SQLException e) {
-				logger.error(e);
-				res = false;
-			}
+			do {
+				try {
+					stmt.executeUpdate(String.format(""
+							+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
+							+ "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
+				} catch (SQLException e) {
+					logger.error(e);
+					if ( e.getMessage().endsWith("locked") ) {
+						logger.warn("readd " + uname);
+						locked = true;
+					}
+					res = false;
+				}
+			} while ( locked );
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {
@@ -132,5 +140,40 @@ public class UserSet {
 			logger.error(e);
 		}
 		return users;
+	}
+	
+	public int uncrawledSize() {
+		int size = 0;
+		try {
+			Connection conn = DBConnection.getConnection();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(""
+					+ "SELECT COUNT(*) FROM `users` "
+					+ "WHERE crawled = 0");
+			if ( rs.next() ) size = rs.getInt(1);
+			rs.close();
+			stmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			logger.error(e);
+		}
+		return size;
+	}
+	
+	public int size() {
+		int size = 0;
+		try {
+			Connection conn = DBConnection.getConnection();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(""
+					+ "SELECT COUNT(*) FROM `users`");
+			if ( rs.next() ) size = rs.getInt(1);
+			rs.close();
+			stmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			logger.error(e);
+		}
+		return size;
 	}
 }

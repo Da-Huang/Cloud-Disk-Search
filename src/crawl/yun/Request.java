@@ -1,20 +1,24 @@
 package crawl.yun;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import net.sf.json.JSONObject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import crawl.IPLists;
 
 
 public class Request {
@@ -43,6 +47,25 @@ public class Request {
 //		System.out.println(jo);
 //	}
 	
+
+	static public JSONObject requestForce(String urlStr, Map<String, String> args) {
+		JSONObject res = null;
+		int tryTimes = 0;
+		while ( res == null ) {
+			try {
+				res = request(urlStr, args);
+			} catch (Exception e) {
+				++ tryTimes;
+				logger.error(e + " --- " + tryTimes);
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
+			}
+		}
+		return res;
+	}
 	
 	static public JSONObject request(String urlStr, Map<String, String> args) throws Exception {
 		urlStr += "?";
@@ -54,29 +77,28 @@ public class Request {
 		}
 		URL url = new URL(urlStr);
 		logger.info(url);
-		boolean succeed = false;
-		int tryTimes = 0;
 		InputStream in = null;
 		HttpURLConnection conn = null;
-		while ( !succeed ) {
-			tryTimes ++;
-			try {
-				conn = (HttpURLConnection) url.openConnection();
-				for (String key : HEADER.keySet()) {
-					conn.setRequestProperty(key, HEADER.get(key));
-				}
-				conn.setRequestMethod("GET");
-				conn.setReadTimeout(1000);
-				conn.setConnectTimeout(1000);
-				conn.connect();
-				in = conn.getInputStream();
-				succeed = true;
-			} catch (IOException e) {
-				logger.error(e + "--- try#" + tryTimes);
-				conn.disconnect();
-				Thread.sleep(2000);
-			}
+
+		Entry<String, Integer> address = IPLists.getInstance().getRandom();
+		if ( address != null ) {
+			String ip = address.getKey();
+			int port = address.getValue();
+			logger.info("requesting from " + ip + ":" + port);
+			conn = (HttpURLConnection) url.openConnection(
+					new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port)));
+		} else {
+			logger.info("requesting without proxy.");
+			conn = (HttpURLConnection) url.openConnection();
 		}
+		for (String key : HEADER.keySet()) {
+			conn.setRequestProperty(key, HEADER.get(key));
+		}
+		conn.setRequestMethod("GET");
+		conn.setReadTimeout(2000);
+		conn.setConnectTimeout(2000);
+		conn.connect();
+		in = conn.getInputStream();
 		String encoding = conn.getHeaderField("Content-Encoding");
 		if ( encoding != null && encoding.equals("gzip") ) in = new GZIPInputStream(in);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));

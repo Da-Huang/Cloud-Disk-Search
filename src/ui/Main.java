@@ -18,6 +18,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import crawl.yun.UserCrawler;
+import crawl.yun.util.UserSet;
 import tcp.TCPThreadServer;
 import util.Variables;
 
@@ -34,6 +35,9 @@ class Args4J {
 
 	@Option(name = "-crawl-users", usage = "Crawl users.")
 	boolean crawlUsers;
+	
+	@Option(name = "-stat", usage = "Statistics on db.")
+	boolean stat;
 }
 
 public class Main {
@@ -65,6 +69,10 @@ public class Main {
 		
 		} else if ( args4j.crawlUsers ) {
 			UserCrawler.crawl();
+			
+		} else if ( args4j.stat ) {
+			System.out.println(UserSet.getInstance().uncrawledSize());
+			System.out.println(UserSet.getInstance().size());
 		}
 	}
 }

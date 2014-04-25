@@ -59,7 +59,7 @@ public class UserSet {
 		}
 	}
 	
-	public synchronized boolean add(long uk, String uname, int follows, int fans, int shares) {
+	public boolean add(long uk, String uname, int follows, int fans, int shares) {
 		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
 //		boolean locked = false;
@@ -89,13 +89,13 @@ public class UserSet {
 		return res;
 	}
 	
-	public synchronized void setDealing(long uk, boolean dealing) {
+	public void setDealing(long uk, boolean dealing) {
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(String.format(""
 					+ "UPDATE `users` SET `dealing` = %d "
-					+ "WHERE `uk` = %d", dealing, uk));
+					+ "WHERE `uk` = %d", dealing ? 1 : 0, uk));
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {
@@ -103,13 +103,13 @@ public class UserSet {
 		}
 	}
 
-	public synchronized void setCrawled(long uk, boolean crawled) {
+	public void setCrawled(long uk, boolean crawled) {
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(String.format(""
 					+ "UPDATE `users` SET `crawled` = %d "
-					+ "WHERE `uk` = %d", crawled, uk));
+					+ "WHERE `uk` = %d", crawled ? 1 : 0, uk));
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {
@@ -117,7 +117,7 @@ public class UserSet {
 		}
 	}
 	
-	public synchronized List<User> getUndealingUsers(int limit) {
+	public List<User> getUndealingUsers(int limit) {
 		List<User> users = new ArrayList<User>();
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -141,7 +141,7 @@ public class UserSet {
 		return users;
 	}
 	
-	public synchronized int uncrawledSize() {
+	public int uncrawledSize() {
 		int size = 0;
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -159,7 +159,7 @@ public class UserSet {
 		return size;
 	}
 	
-	public synchronized int size() {
+	public int size() {
 		int size = 0;
 		try {
 			Connection conn = DBConnection.getConnection();

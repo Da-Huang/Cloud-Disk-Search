@@ -73,7 +73,7 @@ public class Searcher {
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("storedSize"));
 			file.put("md5", doc.get("md5"));
-			file.put("download", doc.get("StoredDownload"));
+			file.put("download", doc.get("storedDownload"));
 			list.add(file);
 		}
 		res.put("filesList", list);

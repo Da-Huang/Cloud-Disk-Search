@@ -67,6 +67,7 @@ public class UserCrawler {
 	}
 	
 	static public void crawlFirst(int type) {
+		logger.entry(type);
 		int start = 0;
 		final int limit = 25;
 		while ( true ) {
@@ -80,6 +81,7 @@ public class UserCrawler {
 				saveFirst(list.getJSONObject(i));
 			start += list.size();
 		}
+		logger.exit();
 	}
 	
 	static private void saveFirst(JSONObject user) {
@@ -110,6 +112,7 @@ public class UserCrawler {
 	}
 	
 	static public void crawlFollow(long uk) {
+		logger.entry(uk);
 		int start = 0;
 		final int limit = 25;
 		while ( true ) {
@@ -124,6 +127,7 @@ public class UserCrawler {
 			start += list.size(); 
 			if ( list.size() == 0 || start >= total ) break;
 		}
+		logger.exit();
 	}
 	
 	static public void crawlFan(long uk) {
@@ -145,13 +149,15 @@ public class UserCrawler {
 	
 	static public void crawl() {
 		logger.entry();
-		Thread thread = new Thread(new UserThreadCrawler());
+		UserThreadCrawler userThreadCrawler = new UserThreadCrawler();
+		Thread thread = new Thread(userThreadCrawler);
 		thread.start();
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
 			logger.error(e);
 		}
+		userThreadCrawler.shutdown();
 		logger.exit();
 	}
 }

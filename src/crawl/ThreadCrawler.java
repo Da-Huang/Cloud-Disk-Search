@@ -33,6 +33,13 @@ public abstract class ThreadCrawler implements Runnable {
 	}
 	
 	/**
+	 * Shutdown the thread crawler.
+	 */
+	final public void shutdown() {
+		threadPool.shutdown();
+	}
+	
+	/**
 	 * It's usage is as follows.<br>
 	 * <code>
 	 * synchronized (this) {

@@ -21,7 +21,7 @@ public class UserThreadCrawler extends ThreadCrawler {
 		logger.entry();
 		final JSONObject hotType = UserCrawler.fetchHotType();
 		final JSONArray hots = hotType.getJSONArray("hot_type");
-		for (int i = 0; i < hots.size(); i ++) {
+		for (int i = 0; i < hots.size() && i < 1; i ++) {
 			final JSONObject element = hots.getJSONObject(i);
 			final String name = element.getString("type_name");
 			final int type = hots.getJSONObject(i).getInt("type");
@@ -31,7 +31,9 @@ public class UserThreadCrawler extends ThreadCrawler {
 				threadPool.execute(new CrawlWorker(this) {
 					@Override
 					public void crawl() {
+						logger.entry(type);
 						UserCrawler.crawlFirst(type);
+						logger.exit();
 					}
 				});
 			}
@@ -54,40 +56,40 @@ public class UserThreadCrawler extends ThreadCrawler {
 		}
 		join();
 		logger.trace("Hot fan crawling finished.");
-
-		users = UserSet.getInstance().getUndealingUsers(1000);
-		while ( users.size() > 0 ) {
-			for (final User user : users) {
-				logger.info("crawling " + user.uname + "'s follows.");
-				UserSet.getInstance().setDealing(user.uk, true);
-				synchronized (this) {
-					waitForIdle();
-					threadPool.execute(new CrawlWorker(this) {
-						@Override
-						public void crawl() {
-							UserCrawler.crawlFollow(user.uk);
-						}
-					});
-				}
-				UserSet.getInstance().setCrawled(user.uk, true);
-				logger.info(user.uname + "'s follows crawled.");
-			}
-			users = UserSet.getInstance().getUndealingUsers(1000);
-			while ( users.size() == 0 ) {
-				int uncrawledSize = UserSet.getInstance().uncrawledSize();
-				if ( uncrawledSize == 0 ) break;
-				synchronized (this) {
-					try {
-						wait();
-					} catch (InterruptedException e) {
-						logger.error(e);
-					}
-				}
-				users = UserSet.getInstance().getUndealingUsers(1000);
-			}
-		}
-		join();
-		logger.trace("Follow crawling crawling finished.");
+//
+//		users = UserSet.getInstance().getUndealingUsers(1000);
+//		while ( users.size() > 0 ) {
+//			for (final User user : users) {
+//				logger.info("crawling " + user.uname + "'s follows.");
+//				UserSet.getInstance().setDealing(user.uk, true);
+//				synchronized (this) {
+//					waitForIdle();
+//					threadPool.execute(new CrawlWorker(this) {
+//						@Override
+//						public void crawl() {
+//							UserCrawler.crawlFollow(user.uk);
+//						}
+//					});
+//				}
+//				UserSet.getInstance().setCrawled(user.uk, true);
+//				logger.info(user.uname + "'s follows crawled.");
+//			}
+//			users = UserSet.getInstance().getUndealingUsers(1000);
+//			while ( users.size() == 0 ) {
+//				int uncrawledSize = UserSet.getInstance().uncrawledSize();
+//				if ( uncrawledSize == 0 ) break;
+//				synchronized (this) {
+//					try {
+//						wait();
+//					} catch (InterruptedException e) {
+//						logger.error(e);
+//					}
+//				}
+//				users = UserSet.getInstance().getUndealingUsers(1000);
+//			}
+//		}
+//		join();
+//		logger.trace("Follow crawling crawling finished.");
 		logger.exit();
 	}
 

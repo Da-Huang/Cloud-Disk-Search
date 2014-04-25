@@ -30,22 +30,23 @@ public class DBConnection {
 //			System.out.println(rs.getString("md5"));
 //		}
 		ResultSet rs = stmt.executeQuery(
-				"SELECT `sql` FROM `sqlite_master` "
-				+ "WHERE `name`='files' AND `type`='table'");
+				"SELECT COUNT(*) FROM `a`");
 		while ( rs.next() ) {
-			System.out.println(rs.getString("sql"));
+			System.out.println(rs.getInt(1));
 		}
 		rs.close();
 		stmt.close();
 		conn.close();
 	}
-	
+
 	public static Connection getConnection() throws SQLException {
 		if ( ds == null ) {
-			ds = new BasicDataSource();
 			Properties prop = Variables.getInstance().getProperties();
+			ds = new BasicDataSource();
 			ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
 			ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
+			ds.setUsername(prop.getProperty("username"));
+			ds.setPassword(prop.getProperty("password"));
 			ds.setUrl(prop.getProperty("url"));
 			ds.setDriverClassName(prop.getProperty("driverClassName"));
 		}

@@ -54,7 +54,7 @@ public class Request {
 			++ tryTimes;
 			logger.error("request json errno -55. redo -- " + tryTimes);
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

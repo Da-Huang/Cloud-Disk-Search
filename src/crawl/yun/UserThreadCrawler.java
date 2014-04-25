@@ -69,10 +69,10 @@ public class UserThreadCrawler extends ThreadCrawler {
 						@Override
 						public void crawl() {
 							UserCrawler.crawlFollow(user.uk);
+							UserSet.getInstance().setCrawled(user.uk, true);
 						}
 					});
 				}
-				UserSet.getInstance().setCrawled(user.uk, true);
 				logger.info(user.uname + "'s follows crawled.");
 			}
 			users = UserSet.getInstance().getUndealingUsers(1000);

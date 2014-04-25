@@ -16,8 +16,8 @@ public class UserCrawler {
 	private static Logger logger = LogManager.getLogger(UserCrawler.class);
 	
 	public static void main(String[] args) throws Exception {
-		UserCrawler.crawl();
-//		UserSet.getInstance().add(4215276877L, "同桌的妳Movie", 0, 8936, 2);
+//		UserCrawler.crawl();
+		UserCrawler.crawlFollow(1463705406L);
 	}
 	
 	/**

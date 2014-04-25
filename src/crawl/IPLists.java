@@ -38,7 +38,7 @@ public class IPLists {
 	
 	public Entry<String, Integer> getRandom() {
 		int index = (int) (Math.random() * (ipLists.size() + 1));
-		if ( index > ipLists.size() ) return null;
+		if ( index >= ipLists.size() ) return null;
 		return ipLists.get(index);
 	}
 }

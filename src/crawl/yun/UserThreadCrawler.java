@@ -18,8 +18,8 @@ public class UserThreadCrawler extends ThreadCrawler {
 
 	@Override
 	public void run() {
-		List<User> users;
 		logger.entry();
+		List<User> users;
 		final JSONObject hotType = UserCrawler.fetchHotType();
 		final JSONArray hots = hotType.getJSONArray("hot_type");
 		for (int i = 0; i < hots.size(); i ++) {

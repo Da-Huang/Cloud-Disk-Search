@@ -37,21 +37,46 @@ public class UserSet {
 					+ "  `dealing` BOOLEAN DEFAULT 0,"
 					+ "  `crawled` BOOLEAN DEFAULT 0"
 					+ ")");
-			stmt.executeUpdate(""
-					+ "CREATE INDEX IF NOT EXISTS `users_follows` "
-					+ "ON `users` (`follows`)");
-			stmt.executeUpdate(""
-					+ "CREATE INDEX IF NOT EXISTS `users_fans` "
-					+ "ON `users` (`fans`)");
-			stmt.executeUpdate(""
-					+ "CREATE INDEX IF NOT EXISTS `users_shares` "
-					+ "ON `users` (`shares`)");
-			stmt.executeUpdate(""
-					+ "CREATE INDEX IF NOT EXISTS `users_dealing` "
-					+ "ON `users` (`dealing`)");
-			stmt.executeUpdate(""
-					+ "CREATE INDEX IF NOT EXISTS `users_crawled` "
-					+ "ON `users` (`crawled`)");
+			try {
+				stmt.executeUpdate(""
+						+ "CREATE INDEX `users_follows` "
+						+ "ON `users` (`follows`)");
+			} catch (SQLException e) {
+				if ( !e.toString().contains("Duplicate key name") )
+					logger.error(e);
+			}
+			try {
+				stmt.executeUpdate(""
+						+ "CREATE INDEX `users_fans` "
+						+ "ON `users` (`fans`)");
+			} catch (SQLException e) {
+				if ( !e.toString().contains("Duplicate key name") )
+					logger.error(e);
+			}
+			try {
+				stmt.executeUpdate(""
+						+ "CREATE INDEX `users_shares` "
+						+ "ON `users` (`shares`)");
+			} catch (SQLException e) {
+				if ( !e.toString().contains("Duplicate key name") )
+					logger.error(e);
+			}
+			try {
+				stmt.executeUpdate(""
+						+ "CREATE INDEX `users_dealing` "
+						+ "ON `users` (`dealing`)");
+			} catch (SQLException e) {
+				if ( !e.toString().contains("Duplicate key name") )
+					logger.error(e);
+			}
+			try {
+				stmt.executeUpdate(""
+						+ "CREATE INDEX `users_crawled` "
+						+ "ON `users` (`crawled`)");
+			} catch (SQLException e) {
+				if ( !e.toString().contains("Duplicate key name") )
+					logger.error(e);
+			}
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {

@@ -9,4 +9,6 @@
 *.log
 
 bin
+logs
+*.gz
 *.db

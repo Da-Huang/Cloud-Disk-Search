@@ -47,6 +47,21 @@ public class Request {
 //		System.out.println(jo);
 //	}
 	
+	static public JSONObject requestForceYun(String urlStr, Map<String, String> args) {
+		JSONObject res = requestForce(urlStr, args);
+		int tryTimes = 0;
+		while ( res.containsKey("errno") && res.getInt("errno") == -55 ) {
+			++ tryTimes;
+			logger.error("request json errno -55. redo -- " + tryTimes);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			res = requestForce(urlStr, args);
+		}
+		return res;
+	}
 
 	static public JSONObject requestForce(String urlStr, Map<String, String> args) {
 		JSONObject res = null;
@@ -111,6 +126,7 @@ public class Request {
 		br.close();
 		conn.disconnect();
 		logger.exit(response.substring(0, Math.min(response.length(), 100)) + "...");
+//		logger.exit(response);
 		return JSONObject.fromObject(response.toString().trim());
 	}
 }

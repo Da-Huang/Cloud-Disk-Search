@@ -10,7 +10,7 @@ import util.Variables;
 
 
 public abstract class ThreadCrawler implements Runnable {
-	private static Logger logger = LogManager.getLogger(ThreadCrawler.class);
+	private static final Logger logger = LogManager.getLogger(ThreadCrawler.class);
 	
 	protected static final int maxThreadsNum = Integer.parseInt(
 			Variables.getInstance().getProperty("threadNum"));

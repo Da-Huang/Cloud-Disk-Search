@@ -13,7 +13,7 @@ import crawl.yun.util.UserSet;
 
 
 public class UserCrawler {
-	private static Logger logger = LogManager.getLogger(UserCrawler.class);
+	private static final Logger logger = LogManager.getLogger(UserCrawler.class);
 	
 	public static void main(String[] args) throws Exception {
 		UserCrawler.crawl();

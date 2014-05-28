@@ -9,8 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class IPLists {
+	private static final Logger logger = LogManager.getLogger(IPLists.class);
 	private static IPLists instance = null;
 	public static IPLists getInstance() {
 		if ( instance == null )
@@ -24,21 +28,49 @@ public class IPLists {
 			String line;
 			while ( (line = br.readLine()) != null ) {
 				int mid = line.indexOf(':');
-				String ip = line.substring(0, mid);
+				if ( mid < 0 ) continue;
+				String ip = line.substring(0, mid).trim();
 				int port = Integer.parseInt(line.substring(mid + 1));
 				ipLists.add(new AbstractMap.SimpleEntry<String, Integer>(ip, port));
 			}
 			br.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
+		ipLists.add(null);
+		availables = ipLists.size();
 	}
 	
 	private List<Entry<String, Integer>> ipLists = new ArrayList<>();
+	private int availables = 0;
 	
-	public Entry<String, Integer> getRandom() {
-		int index = (int) (Math.random() * (ipLists.size() + 1));
-		if ( index >= ipLists.size() ) return null;
-		return ipLists.get(index);
+	synchronized public int getRandomIpd() {
+		while ( availables <= 0 ) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		int index = (int) (Math.random() * availables);
+		availables --;
+		Entry<String, Integer> tmp = ipLists.get(index);
+		ipLists.set(index, ipLists.get(availables));
+		ipLists.set(availables, tmp);
+		
+		return availables;
+	}
+	
+	public Entry<String, Integer> get(int ipd) {
+		return ipLists.get(ipd);
+	}
+	
+	synchronized public void release(int ipd) {
+		Entry<String, Integer> tmp = ipLists.get(ipd);
+		ipLists.set(ipd, ipLists.get(availables));
+		ipLists.set(availables, tmp);
+		availables ++;
+		notify();
 	}
 }

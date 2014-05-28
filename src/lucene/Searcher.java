@@ -23,7 +23,7 @@ import org.apache.lucene.store.FSDirectory;
 import util.Variables;
 
 public class Searcher {
-	private static Logger logger = LogManager.getLogger(Searcher.class);
+	private static final Logger logger = LogManager.getLogger(Searcher.class);
 	private Searcher() {}
 	private static Searcher INSTANCE = null;
 	public static Searcher getInstance() {

@@ -23,7 +23,7 @@ import exception.AppException;
 
 
 public class TCPWorker implements Runnable {
-	private static Logger logger = LogManager.getLogger(TCPWorker.class);
+	private static final Logger logger = LogManager.getLogger(TCPWorker.class);
 	
 	private Socket client = null;
 	

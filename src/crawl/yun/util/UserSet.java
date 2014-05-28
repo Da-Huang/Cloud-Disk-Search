@@ -15,7 +15,7 @@ import database.DBConnection;
 
 
 public class UserSet {
-	private static Logger logger = LogManager.getLogger(UserSet.class);
+	private static final Logger logger = LogManager.getLogger(UserSet.class);
 	
 	private static UserSet instance = null;
 	public static UserSet getInstance() {
@@ -87,24 +87,17 @@ public class UserSet {
 	public boolean add(long uk, String uname, int follows, int fans, int shares) {
 		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
-//		boolean locked = false;
 		try {
 			Connection conn = DBConnection.getConnection();
 			Statement stmt = conn.createStatement();
-//			do {
-				try {
-					stmt.executeUpdate(String.format(""
-							+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
-							+ "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
-				} catch (SQLException e) {
-					logger.error(e + " : <" + uk + ":" + uname + ">");
-//					if ( e.toString().trim().endsWith("locked") ) {
-//						logger.warn("readd " + uk + ":" + uname);
-//						locked = true;
-//					}
-					res = false;
-				}
-//			} while ( locked );
+			try {
+				stmt.executeUpdate(String.format(""
+						+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
+						+ "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
+			} catch (SQLException e) {
+				logger.error(e + " : <" + uk + ":" + uname + ">");
+				res = false;
+			}
 			stmt.close();
 			conn.close();
 		} catch (SQLException e) {

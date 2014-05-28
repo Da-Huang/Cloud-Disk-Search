@@ -7,7 +7,7 @@ import crawl.ThreadCrawler;
 
 
 abstract public class CrawlWorker implements Runnable {
-	private static Logger logger = LogManager.getLogger(CrawlWorker.class);
+	private static final Logger logger = LogManager.getLogger(CrawlWorker.class);
 	
 	private ThreadCrawler threadUserCrawler;
 	public CrawlWorker(ThreadCrawler threadUserCrawler) {

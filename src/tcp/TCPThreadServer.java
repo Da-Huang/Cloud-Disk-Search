@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import util.Variables;
 
 public class TCPThreadServer implements Runnable {
-	private static Logger logger = LogManager.getLogger(TCPThreadServer.class);
+	private static final Logger logger = LogManager.getLogger(TCPThreadServer.class);
 	
 	private boolean stop = false;
 	private static final int maxThreadsNum = Integer.parseInt(

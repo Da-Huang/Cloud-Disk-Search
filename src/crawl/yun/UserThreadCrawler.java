@@ -14,7 +14,7 @@ import crawl.yun.util.UserSet;
 
 
 public class UserThreadCrawler extends ThreadCrawler {
-	private static Logger logger = LogManager.getLogger(UserThreadCrawler.class);
+	private static final Logger logger = LogManager.getLogger(UserThreadCrawler.class);
 
 	@Override
 	public void run() {

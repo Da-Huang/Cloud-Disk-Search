@@ -22,9 +22,9 @@ import crawl.IPLists;
 
 
 public class Request {
-	private static Logger logger = LogManager.getLogger(Request.class);
+	private static final Logger logger = LogManager.getLogger(Request.class);
 	
-	private final static Map<String, String> HEADER = new HashMap<>();
+	private static final Map<String, String> HEADER = new HashMap<>();
 	static {
 		HEADER.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 		HEADER.put("Accept-Encoding", "gzip,deflate,sdch");
@@ -95,7 +95,8 @@ public class Request {
 		InputStream in = null;
 		HttpURLConnection conn = null;
 
-		Entry<String, Integer> address = IPLists.getInstance().getRandom();
+		int ipd = IPLists.getInstance().getRandomIpd();
+		Entry<String, Integer> address = IPLists.getInstance().get(ipd);
 		if ( address != null ) {
 			String ip = address.getKey();
 			int port = address.getValue();
@@ -125,6 +126,8 @@ public class Request {
 		}
 		br.close();
 		conn.disconnect();
+		
+		IPLists.getInstance().release(ipd);
 		logger.exit(response.substring(0, Math.min(response.length(), 100)) + "...");
 //		logger.exit(response);
 		return JSONObject.fromObject(response.toString().trim());

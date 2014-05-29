@@ -35,7 +35,7 @@ public class IPLists {
 			}
 			br.close();
 		} catch (IOException e) {
-			
+			logger.error(e);
 		}
 		ipLists.add(null);
 		availables = ipLists.size();
@@ -49,7 +49,7 @@ public class IPLists {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		

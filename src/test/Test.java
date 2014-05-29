@@ -1,5 +1,8 @@
 package test;
 
+import java.util.Date;
+
+import net.sf.json.JSONObject;
 import crawl.yun.util.UserSet;
 
 public class Test {
@@ -49,6 +52,10 @@ public class Test {
 //		t2.start();
 //		t1.join();
 //		t2.join();
-		System.out.println(UserSet.getInstance().size());
+//		System.out.println(UserSet.getInstance().size());
+//		System.out.println(new Date(1389860622691L));
+//		System.out.println(new Date(1401324183L));
+		JSONObject o = JSONObject.fromObject("{b:'true'}");
+		System.out.println(o.getBoolean("b"));
 	}
 }

@@ -71,11 +71,10 @@ public class UserCrawler {
 		int start = 0;
 		final int limit = 25;
 		while ( true ) {
-			JSONObject data = fetchFirst(type, start, limit);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("hotuser_list");
+			final JSONObject data = fetchFirst(type, start, limit);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("hotuser_list");
 			if ( list.size() == 0 ) break;
 			for (int i = 0; i < list.size(); i ++)
 				saveFirst(list.getJSONObject(i));
@@ -85,29 +84,29 @@ public class UserCrawler {
 	}
 	
 	static private void saveFirst(JSONObject user) {
-		final long uk = user.getLong("hot_uk");
+		final long uk = Long.parseLong(user.getString("hot_uk"));
 		final String uname = user.getString("hot_uname");
-		final int follows = user.getInt("follow_count");
-		final int fans = user.getInt("fans_count");
-		final int shares = user.getInt("pubshare_count");
+		final int follows = Integer.parseInt(user.getString("follow_count"));
+		final int fans = Integer.parseInt(user.getString("fans_count"));
+		final int shares = Integer.parseInt(user.getString("pubshare_count"));
 		UserSet.getInstance().add(uk, uname, follows, fans, shares);
 	}
 	
 	static private void saveFollow(JSONObject user) {
-		final long uk = user.getLong("follow_uk");
+		final long uk = Long.parseLong(user.getString("follow_uk"));
 		final String uname = user.getString("follow_uname");
-		final int follows = user.getInt("follow_count");
-		final int fans = user.getInt("fans_count");
-		final int shares = user.getInt("pubshare_count");
+		final int follows = Integer.parseInt(user.getString("follow_count"));
+		final int fans = Integer.parseInt(user.getString("fans_count"));
+		final int shares = Integer.parseInt(user.getString("pubshare_count"));
 		UserSet.getInstance().add(uk, uname, follows, fans, shares);
 	}
 
 	static private void saveFan(JSONObject user) {
-		final long uk = user.getLong("fans_uk");
+		final long uk = Long.parseLong(user.getString("fans_uk"));
 		final String uname = user.getString("fans_uname");
-		final int follows = user.getInt("follow_count");
-		final int fans = user.getInt("fans_count");
-		final int shares = user.getInt("pubshare_count");
+		final int follows = Integer.parseInt(user.getString("follow_count"));
+		final int fans = Integer.parseInt(user.getString("fans_count"));
+		final int shares = Integer.parseInt(user.getString("pubshare_count"));
 		UserSet.getInstance().add(uk, uname, follows, fans, shares);
 	}
 	
@@ -116,12 +115,11 @@ public class UserCrawler {
 		int start = 0;
 		final int limit = 25;
 		while ( true ) {
-			JSONObject data = fetchFollow(uk, start, limit);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("follow_list");
-			final int total = data.getInt("total_count");
+			final JSONObject data = fetchFollow(uk, start, limit);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("follow_list");
+			final int total = Integer.parseInt(data.getString("total_count"));
 			for (int i = 0; i < list.size(); i ++)
 				saveFollow(list.getJSONObject(i));
 			start += list.size(); 
@@ -134,12 +132,11 @@ public class UserCrawler {
 		int start = 0;
 		final int limit = 25;
 		while ( true ) {
-			JSONObject data = fetchFan(uk, start, limit);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("fans_list");
-			final int total = data.getInt("total_count");
+			final JSONObject data = fetchFan(uk, start, limit);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("fans_list");
+			final int total = Integer.parseInt(data.getString("total_count"));
 			for (int i = 0; i < list.size(); i ++)
 				saveFan(list.getJSONObject(i));
 			start += list.size(); 
@@ -150,7 +147,7 @@ public class UserCrawler {
 	static public void crawl() {
 		logger.entry();
 		UserThreadCrawler userThreadCrawler = new UserThreadCrawler();
-		Thread thread = new Thread(userThreadCrawler);
+		final Thread thread = new Thread(userThreadCrawler);
 		thread.start();
 		try {
 			thread.join();

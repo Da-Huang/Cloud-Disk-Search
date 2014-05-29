@@ -39,7 +39,7 @@ public class TCPWorker implements Runnable {
 		try {
 			reader = DirectoryReader.open(FSDirectory.open(
 					new File(Variables.getInstance().getProperties().getProperty("indexPath"))));
-			IndexSearcher searcher = new IndexSearcher(reader);
+			final IndexSearcher searcher = new IndexSearcher(reader);
 			
 			br = new BufferedReader(
 					new InputStreamReader(client.getInputStream(), "utf8"));
@@ -47,29 +47,29 @@ public class TCPWorker implements Runnable {
 			
 			logger.info("request: " + request);
 			if ( request != null ) {
-				JSONObject jin = JSONObject.fromObject(request.trim());
+				final JSONObject jin = JSONObject.fromObject(request.trim());
 				String type = jin.getString("type");
 				if ( type == null ) throw new AppException("No Type.");
 				type = type.trim();
 				
 				if ( type.equals("search") ) {
-					String query = jin.getString("query");
-					int start = jin.getInt("start");
-					int limit  = jin.getInt("limit");
-					String fileType = jin.getString("fileType");
+					final String query = jin.getString("query");
+					final int start = jin.getInt("start");
+					final int limit  = jin.getInt("limit");
+					final String fileType = jin.getString("fileType");
 					
-					JSONObject jout = Searcher.getInstance().search(searcher, 
+					final JSONObject jout = Searcher.getInstance().search(searcher, 
 							QueryParser.getInstance().parseAsField(query, fileType, "name"), start, limit);
 					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					
 				} else if ( type.equals("hot") ) {
-					int start = jin.getInt("start");
-					int limit = jin.getInt("limit");
+					final int start = jin.getInt("start");
+					final int limit = jin.getInt("limit");
 					String fileType = jin.getString("fileType");
 					fileType = fileType.toLowerCase();
 					if ( fileType.equals("all") ) fileType = null;
 					
-					JSONObject jout = Searcher.getInstance().hot(searcher, fileType, start, limit);
+					final JSONObject jout = Searcher.getInstance().hot(searcher, fileType, start, limit);
 					client.getOutputStream().write(Utils.compress(jout.toString().getBytes("utf8")));
 					
 				} else throw new AppException("Type Error.");

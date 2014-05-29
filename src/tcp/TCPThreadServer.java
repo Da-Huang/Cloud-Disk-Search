@@ -16,7 +16,7 @@ public class TCPThreadServer implements Runnable {
 	private boolean stop = false;
 	private static final int maxThreadsNum = Integer.parseInt(
 			Variables.getInstance().getProperty("threadNum"));
-	private ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
+	private final ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
 	private ServerSocket server = null;
 	
 	public TCPThreadServer() {
@@ -31,7 +31,7 @@ public class TCPThreadServer implements Runnable {
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		Thread thread = new Thread(new TCPThreadServer());
+		final Thread thread = new Thread(new TCPThreadServer());
 		thread.start();
 		thread.join();
 	}

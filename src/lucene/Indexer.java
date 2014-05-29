@@ -42,13 +42,13 @@ public class Indexer {
 	}
 	
 	public static void main(String[] args) throws SQLException, IOException {
-		boolean create = Boolean.parseBoolean(Variables.getInstance().getProperty("create"));
+		final boolean create = Boolean.parseBoolean(Variables.getInstance().getProperty("create"));
 		
-		Date start = new Date();
-		Directory dir = FSDirectory.open(new File(
+		final Date start = new Date();
+		final Directory dir = FSDirectory.open(new File(
 				Variables.getInstance().getProperties().getProperty("indexPath")));
-		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
-		IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
+		final Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
+		final IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 		
 		if ( create ) {
 			iwc.setOpenMode(OpenMode.CREATE);
@@ -57,50 +57,50 @@ public class Indexer {
 		}
 		iwc.setRAMBufferSizeMB(256);
 		
-		IndexWriter writer = new IndexWriter(dir, iwc);
+		final IndexWriter writer = new IndexWriter(dir, iwc);
 		Indexer.getInstance().indexDB(writer);
 		
 		writer.close();
 		
-		Date end = new Date();
+		final Date end = new Date();
 		System.out.println(end.getTime() - start.getTime() + " total milliseconds.");
 	}
 	
 	public void indexDB(IndexWriter writer) throws IOException, SQLException {
 		logger.entry();
 		int count = 0;
-		Connection conn = DBConnection.getConnection();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(
+		final Connection conn = DBConnection.getConnection();
+		final Statement stmt = conn.createStatement();
+		final ResultSet rs = stmt.executeQuery(
 				"SELECT `name`, `url`, `md5`, `size` FROM `files` "
 //				+ "LIMIT 0, 30000"
 		);
 		while ( rs.next() ) {
-			Document doc = new Document();
-			String fileName = rs.getString("name");
+			final Document doc = new Document();
+			final String fileName = rs.getString("name");
 			
-			Field name = new TextField("name", fileName, Field.Store.YES);
-			Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
-			Field size = new NumericDocValuesField("size", rs.getLong("size"));
-			Field storedSize = new StoredField("storedSize", rs.getLong("size"));
+			final Field name = new TextField("name", fileName, Field.Store.YES);
+			final Field url = new StringField("url", rs.getString("url"), Field.Store.YES);
+			final Field size = new NumericDocValuesField("size", rs.getLong("size"));
+			final Field storedSize = new StoredField("storedSize", rs.getLong("size"));
 			doc.add(name);
 			doc.add(url);
 			doc.add(size);
 			doc.add(storedSize);
 			
-			String postfix = fileName.substring(fileName.lastIndexOf('.') + 1);
-			Field type = new StringField("type", FileType.getType(postfix), Field.Store.YES);
+			final String postfix = fileName.substring(fileName.lastIndexOf('.') + 1);
+			final Field type = new StringField("type", FileType.getType(postfix), Field.Store.YES);
 			doc.add(type);
 			
-			Field valid = new StringField("valid", "Y", Field.Store.YES);
+			final Field valid = new StringField("valid", "Y", Field.Store.YES);
 			doc.add(valid);
 			
-			Field md5 = new StoredField("md5", DigestUtils.md5Hex(fileName + rs.getString("size")));
+			final Field md5 = new StoredField("md5", DigestUtils.md5Hex(fileName + rs.getString("size")));
 			doc.add(md5);
 			
-			long downloadValue = (long) (Math.random() * 1000);
-			Field download = new NumericDocValuesField("download", downloadValue);
-			Field storedDownload = new StoredField("storedDownload", downloadValue);
+			final long downloadValue = (long) (Math.random() * 1000);
+			final Field download = new NumericDocValuesField("download", downloadValue);
+			final Field storedDownload = new StoredField("storedDownload", downloadValue);
 			doc.add(download);
 			doc.add(storedDownload);
 			

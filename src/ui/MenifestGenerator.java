@@ -12,12 +12,12 @@ public class MenifestGenerator {
 	}
 	
 	public static void gen() throws IOException {
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+		final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
 							new FileOutputStream("META-INF/MANIFEST.MF")));
 		bw.write("Manifest-Version: 1.0\n");
 		bw.write("Class-Path: ");
 		final File libDir = new File("lib");
-		File[] files = libDir.listFiles();
+		final File[] files = libDir.listFiles();
 		for (File file : files) {
 			bw.write(file.getPath().replaceAll("\\\\", "/") + " ");
 		}

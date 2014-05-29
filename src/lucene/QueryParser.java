@@ -41,11 +41,11 @@ public class QueryParser {
 	
 	public Query parseAsField(String qText, String field) throws IOException {
 		logger.entry(qText, field);
-		Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
-		TokenStream stream = analyzer.tokenStream(null, new StringReader(qText));
-		CharTermAttribute cattr = stream.addAttribute(CharTermAttribute.class);
+		final Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
+		final TokenStream stream = analyzer.tokenStream(null, new StringReader(qText));
+		final CharTermAttribute cattr = stream.addAttribute(CharTermAttribute.class);
 		stream.reset();
-		PhraseQuery query = new PhraseQuery();
+		final PhraseQuery query = new PhraseQuery();
 		while ( stream.incrementToken() ) {
 			query.add(new Term(field, cattr.toString()));
 		}
@@ -61,7 +61,7 @@ public class QueryParser {
 		logger.entry(qText, fileType, field);
 		if ( ! FileType.containsType(fileType) ) fileType = null;
 		
-		Query textQuery = parseAsField(qText, field);
+		final Query textQuery = parseAsField(qText, field);
 		Query query = textQuery;
 		if ( fileType != null ) {
 			Query fileQuery = new TermQuery(new Term("type", fileType));

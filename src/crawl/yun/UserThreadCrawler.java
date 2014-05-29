@@ -77,7 +77,7 @@ public class UserThreadCrawler extends ThreadCrawler {
 			}
 			users = UserSet.getInstance().getUndealingUsers(1000);
 			while ( users.size() == 0 ) {
-				int uncrawledSize = UserSet.getInstance().uncrawledSize();
+				final int uncrawledSize = UserSet.getInstance().uncrawledSize();
 				if ( uncrawledSize == 0 ) break;
 				synchronized (this) {
 					try {

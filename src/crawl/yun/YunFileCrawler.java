@@ -63,45 +63,45 @@ public class YunFileCrawler {
 	
 	static private void saveFilesInTopLevel(JSONObject record) {
 		final String urlBase = "http://yun.baidu.com/share/link";
-		long uk = record.getLong("uk");
-		long sid = record.getLong("shareid");
-		String desc = record.getString("desc");
-		JSONObject file = record.getJSONArray("filelist").getJSONObject(0);
-		String md5 = file.getString("md5");
-		String title = file.getString("title");
-		String url = String.format("%s?uk=%d&shareid=%d", urlBase, uk, sid);
-		long size = file.getLong("size");
-		long time = file.getLong("feed_time");
-		int downloads = file.getInt("dCnt");
-		int visits = file.getInt("vCnt");
-		int saves = file.getInt("tCnt");
+		final long uk = Integer.parseInt(record.getString("uk"));
+		final long sid = Long.parseLong(record.getString("shareid"));
+		final String title = record.getString("title");
+		final long time = Long.parseLong(record.getString("feed_time"));
+		final String desc = record.getString("desc");
+		final JSONObject file = record.getJSONArray("filelist").getJSONObject(0);
+		final String md5 = file.getString("md5");
+		final String url = String.format("%s?uk=%d&shareid=%d", urlBase, uk, sid);
+		final long size = Long.parseLong(file.getString("size"));
+		final int downloads = Integer.parseInt(record.getString("dCnt"));
+		final int visits = Integer.parseInt(record.getString("vCnt"));
+		final int saves = Integer.parseInt(record.getString("tCnt"));
 		FileSet.getInstance().add(uk, md5, title, url, size, desc, time, downloads, visits, saves);
 	}
 	
 	static private void saveFilesInDir(long uk, long sid, String desc, 
 			int downloads, int visits, int saves, JSONObject file) {
 		final String urlBase = "http://yun.baidu.com/share/link";
-		long fsid = file.getLong("fs_id");
-		String url = String.format("%s?uk=%d&shareid=%d&fid=%d", urlBase, uk, sid, fsid);
-		String md5 = file.getString("md5");
-		long time = file.getLong("server_mtime");
-		String title = file.getString("server_filename");
-		long size = file.getLong("size");
+		final long fsid = Long.parseLong(file.getString("fs_id"));
+		final String url = String.format("%s?uk=%d&shareid=%d&fid=%d", urlBase, uk, sid, fsid);
+		final String md5 = file.getString("md5");
+		final long time = Long.parseLong(file.getString("server_mtime"));
+		final String title = file.getString("server_filename");
+		final long size = Long.parseLong(file.getString("size"));
 		FileSet.getInstance().add(uk, md5, title, url, size, desc, time, downloads, visits, saves);
 	}
 	
 	static private void saveFilesInAlbum(long uk, long aid, String desc, JSONObject file) {
 		final String urlBase = "http://yun.baidu.com/pcloud/album/file";
 		if ( !file.containsKey("size") ) return;
-		long size = file.getLong("size");
-		String md5 = file.getString("md5");
-		long fsid = file.getLong("fs_id");
-		String title = file.getString("server_filename");
-		String url = String.format("%s?uk=%d&album_id=%d&fsid=%d", urlBase, uk, aid, fsid);
-		long time = file.getLong("add_time");
-		int downloads = file.getInt("dCnt");
-		int visits = file.getInt("vCnt");
-		int saves = file.getInt("tCnt");
+		final long size = Long.parseLong(file.getString("size"));
+		final String md5 = file.getString("md5");
+		final long fsid = Long.parseLong(file.getString("fs_id"));
+		final String title = file.getString("server_filename");
+		final String url = String.format("%s?uk=%d&album_id=%d&fsid=%d", urlBase, uk, aid, fsid);
+		final long time = Long.parseLong(file.getString("add_time"));
+		final int downloads = Integer.parseInt(file.getString("dCnt"));
+		final int visits = Integer.parseInt(file.getString("vCnt"));
+		final int saves = Integer.parseInt(file.getString("tCnt"));
 		FileSet.getInstance().add(uk, md5, title, url, size, desc, time, downloads, visits, saves);
 	}
 	
@@ -112,30 +112,27 @@ public class YunFileCrawler {
 	 * @return Whether this record is valid.
 	 */
 	static private boolean dealWithRecordInTopLevel(long uk, JSONObject record) {
-		if ( !record.containsKey("filelist") || record.getInt("filelist") < 1 ) {
-			return false;
-		}
-		String feedType = record.getString("feed_type");
+		final String feedType = record.getString("feed_type");
 		if ( feedType.equals("album") ) {
-			long aid = record.getLong("album_id");
-			String desc = record.getString("desc");
+			final long aid = Long.parseLong(record.getString("album_id"));
+			final String desc = record.getString("desc");
 			crawlAlbum(uk, aid, desc);
 			
 		} else if ( feedType.equals("share") ) {
 			// May be file or directory
-			long sid = record.getLong("shareid");
-			JSONArray filelist = record.getJSONArray("filelist");
-			if ( filelist == null || filelist.size() < 1 ) return false;
-			JSONObject file = filelist.getJSONObject(0);
-			boolean isDir = file.getInt("isdir") != 0;
+			final long sid = Long.parseLong(record.getString("shareid"));
+			final JSONArray filelist = record.optJSONArray("filelist");
+			if ( filelist != null && filelist.size() < 1 ) return false;
+			final JSONObject file = filelist.getJSONObject(0);
+			final boolean isDir = Integer.parseInt(file.getString("isdir")) != 0;
 
 			if ( isDir ) {
 				// directory
-				String path = decodePath(file.getString("path"));
-				String desc = record.getString("desc");
-				int downloads = file.getInt("dCnt");
-				int visits = file.getInt("vCnt");
-				int saves = file.getInt("tCnt");
+				final String path = decodePath(file.getString("path"));
+				final String desc = record.getString("desc");
+				final int downloads = Integer.parseInt(record.getString("dCnt"));
+				final int visits = Integer.parseInt(record.getString("vCnt"));
+				final int saves = Integer.parseInt(record.getString("tCnt"));
 				crawlDir(uk, sid, path, desc, downloads, visits, saves);
 				
 			} else {
@@ -148,7 +145,7 @@ public class YunFileCrawler {
 	}
 	
 	static private boolean dealWithRecordInAlbum(long uk, long aid, String desc, JSONObject record) {
-		int fileStatus = record.getInt("file_status");
+		final int fileStatus = Integer.parseInt(record.getString("file_status"));
 		if ( fileStatus == 0 ) { // legal file
 			saveFilesInAlbum(uk, aid, desc, record);
 			return true;
@@ -158,9 +155,9 @@ public class YunFileCrawler {
 	
 	static private boolean dealWithRecordInDir(long uk, long sid, String dir, String desc, 
 			int downloads, int visits, int saves, JSONObject record) {
-		boolean isDir = record.getInt("isdir") != 0;
+		final boolean isDir = Integer.parseInt(record.getString("isdir")) != 0;
 		if ( isDir ) {
-			String path = decodePath(record.getString("path"));
+			final String path = decodePath(record.getString("path"));
 			crawlDir(uk, sid, path, desc, downloads, visits, saves);
 			
 		} else {
@@ -191,6 +188,10 @@ public class YunFileCrawler {
 		return path;
 	}
 	
+	static public void crawl(long uk) {
+		crawlTopLevel(uk);
+	}
+	
 	/**
 	 * @param uk user id
 	 */
@@ -199,14 +200,13 @@ public class YunFileCrawler {
 		int start = 0;
 		final int limit = 100;
 		while ( true ) {
-			JSONObject data = fetchTopLevel(uk, start, limit);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("records");
-			final int total = data.getInt("total_count");
+			final JSONObject data = fetchTopLevel(uk, start, limit);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("records");
+			final int total = Integer.parseInt(data.getString("total_count"));
 			for (int i = 0; i < list.size(); i ++) {
-				JSONObject record = list.getJSONObject(i);
+				final JSONObject record = list.getJSONObject(i);
 				dealWithRecordInTopLevel(uk, record);
 			}
 			start += list.size(); 
@@ -220,14 +220,13 @@ public class YunFileCrawler {
 		int start = 0;
 		final int limit = 100;
 		while ( true ) {
-			JSONObject data = fetchAlbum(uk, aid, start, limit);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("records");
-			final int total = data.getInt("total_count");
+			final JSONObject data = fetchAlbum(uk, aid, start, limit);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("list");
+			final int total = Integer.parseInt(data.getString("count"));
 			for (int i = 0; i < list.size(); i ++) {
-				JSONObject record = list.getJSONObject(i);
+				final JSONObject record = list.getJSONObject(i);
 				dealWithRecordInAlbum(uk, aid, desc, record);
 			}
 			start += list.size(); 
@@ -241,13 +240,12 @@ public class YunFileCrawler {
 		logger.entry(uk, sid, dir);
 		int page = 1;
 		while ( true ) {
-			JSONObject data = fetchDir(uk, sid, dir, page);
-			if ( data == null || !data.containsKey("errno") || data.getInt("errno") != 0 ) {
-				break;
-			}
-			JSONArray list = data.getJSONArray("records");
+			final JSONObject data = fetchDir(uk, sid, dir, page);
+			final int errno = Integer.parseInt(data.optString("errno", "-1"));
+			if ( errno != 0 ) break;
+			final JSONArray list = data.getJSONArray("records");
 			for (int i = 0; i < list.size(); i ++) {
-				JSONObject record = list.getJSONObject(i);
+				final JSONObject record = list.getJSONObject(i);
 				dealWithRecordInDir(uk, sid, dir, desc, downloads, visits, saves, record);
 			}
 			if ( list.size() == 0 ) break;

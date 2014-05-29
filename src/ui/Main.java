@@ -42,8 +42,8 @@ class Args4J {
 
 public class Main {
 	public static void main(String[] args) throws CmdLineException, IOException, InterruptedException, SQLException {
-		Args4J args4j = new Args4J();
-		CmdLineParser parser = new CmdLineParser(args4j);
+		final Args4J args4j = new Args4J();
+		final CmdLineParser parser = new CmdLineParser(args4j);
 		parser.parseArgument(args);
 		if ( args.length == 0 ) {
 			parser.printUsage(System.out);
@@ -54,16 +54,16 @@ public class Main {
 			Indexer.main(null);
 			
 		} else if ( args4j.searchQuery != null ) {
-			IndexReader reader = DirectoryReader.open(FSDirectory.open(
+			final IndexReader reader = DirectoryReader.open(FSDirectory.open(
 					new File(Variables.getInstance().getProperties().getProperty("indexPath"))));
-			IndexSearcher searcher = new IndexSearcher(reader);
-			JSONObject result = Searcher.getInstance().search(searcher, 
+			final IndexSearcher searcher = new IndexSearcher(reader);
+			final JSONObject result = Searcher.getInstance().search(searcher, 
 					QueryParser.getInstance().parseAsField(args4j.searchQuery, "name"), 0, 100);
 			System.out.println(result);
 			reader.close();
 			
 		} else if ( args4j.doServe ) {
-			Thread thread = new Thread(new TCPThreadServer());
+			final Thread thread = new Thread(new TCPThreadServer());
 			thread.start();
 			thread.join();
 		

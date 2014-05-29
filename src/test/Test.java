@@ -55,7 +55,6 @@ public class Test {
 //		System.out.println(UserSet.getInstance().size());
 //		System.out.println(new Date(1389860622691L));
 //		System.out.println(new Date(1401324183L));
-		JSONObject o = JSONObject.fromObject("{b:'true'}");
-		System.out.println(o.getBoolean("b"));
+		System.out.println(8068746757916692393L);
 	}
 }

@@ -90,16 +90,16 @@ public class Request {
 			urlStr += URLEncoder.encode(args.get(key), "utf8");
 			urlStr += "&";
 		}
-		URL url = new URL(urlStr);
+		final URL url = new URL(urlStr);
 		logger.info(url);
 		InputStream in = null;
 		HttpURLConnection conn = null;
 
-		int ipd = IPLists.getInstance().getRandomIpd();
-		Entry<String, Integer> address = IPLists.getInstance().get(ipd);
+		final int ipd = IPLists.getInstance().getRandomIpd();
+		final Entry<String, Integer> address = IPLists.getInstance().get(ipd);
 		if ( address != null ) {
-			String ip = address.getKey();
-			int port = address.getValue();
+			final String ip = address.getKey();
+			final int port = address.getValue();
 			logger.info("requesting from " + ip + ":" + port);
 			conn = (HttpURLConnection) url.openConnection(
 					new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port)));
@@ -115,10 +115,10 @@ public class Request {
 		conn.setConnectTimeout(2000);
 		conn.connect();
 		in = conn.getInputStream();
-		String encoding = conn.getHeaderField("Content-Encoding");
+		final String encoding = conn.getHeaderField("Content-Encoding");
 		if ( encoding != null && encoding.equals("gzip") ) in = new GZIPInputStream(in);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
-		StringBuffer response = new StringBuffer();
+		final BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
+		final StringBuffer response = new StringBuffer();
 		String line;
 		while ( (line = br.readLine()) != null ) {
 			response.append(line);

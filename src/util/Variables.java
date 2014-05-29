@@ -31,7 +31,7 @@ public class Variables {
 		logger.error("test");
 	}
 	
-	private Properties properties = new Properties();
+	private final Properties properties = new Properties();
 	
 	public Properties getProperties() {
 		return properties;

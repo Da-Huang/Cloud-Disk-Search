@@ -32,12 +32,12 @@ public class Searcher {
 	};
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		IndexReader reader = DirectoryReader.open(FSDirectory.open(
+		final IndexReader reader = DirectoryReader.open(FSDirectory.open(
 				new File(Variables.getInstance().getProperties().getProperty("indexPath"))));
-		IndexSearcher searcher = new IndexSearcher(reader);
+		final IndexSearcher searcher = new IndexSearcher(reader);
 
-		int start = 10;
-		int limit = 20;
+		final int start = 10;
+		final int limit = 20;
 		System.out.println(Searcher.getInstance().hot(searcher, null, start, limit));
 		
 		reader.close();
@@ -46,7 +46,7 @@ public class Searcher {
 	public JSONObject hot(IndexSearcher searcher, String fileType,
 			int start, int limit) throws IOException {
 		logger.entry(fileType, start, limit);
-		TopDocs tops = searcher.search(QueryParser.getInstance().parseHot(fileType), start + limit,
+		final TopDocs tops = searcher.search(QueryParser.getInstance().parseHot(fileType), start + limit,
 				new Sort(new SortField("size", SortField.Type.LONG, true)));
 		return makeup(searcher, tops, start, limit);
 	}
@@ -54,21 +54,21 @@ public class Searcher {
 	public JSONObject search(IndexSearcher searcher, Query query, 
 				int start, int limit) throws IOException {
 		logger.entry(query, start, limit);
-		TopDocs tops = searcher.search(query, start + limit);
+		final TopDocs tops = searcher.search(query, start + limit);
 		return makeup(searcher, tops, start, limit);
 	}
 	
 	private static JSONObject makeup(IndexSearcher searcher, TopDocs tops, 
 			int start, int limit) throws IOException {
-		JSONObject res = new JSONObject();
-		ScoreDoc[] hits = tops.scoreDocs;
+		final JSONObject res = new JSONObject();
+		final ScoreDoc[] hits = tops.scoreDocs;
 		final int totalHits = tops.totalHits;
 		res.put("totalNum", totalHits);
 		logger.info("totalNum=" + totalHits);
 		JSONArray list = new JSONArray();
 		for (int i = start; i < start + limit && i < hits.length; i ++) {
-			JSONObject file = new JSONObject();
-			Document doc = searcher.doc(hits[i].doc);
+			final JSONObject file = new JSONObject();
+			final Document doc = searcher.doc(hits[i].doc);
 			file.put("name", new String(doc.get("name").getBytes("utf8"), "utf8"));
 			file.put("url", doc.get("url"));
 			file.put("size", doc.get("storedSize"));

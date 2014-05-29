@@ -22,8 +22,8 @@ public class Utils {
 	
 	public static byte[] compress(byte[] bytes) {
 		try {
-		    ByteArrayOutputStream out = new ByteArrayOutputStream();
-		    GZIPOutputStream gzip = new GZIPOutputStream(out);
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
+			final GZIPOutputStream gzip = new GZIPOutputStream(out);
 		    gzip.write(bytes);
 		    gzip.close();
 		    return out.toByteArray();
@@ -35,8 +35,8 @@ public class Utils {
 	
 	public static String compress(String str) {
 		try {
-		    ByteArrayOutputStream out = new ByteArrayOutputStream();
-		    GZIPOutputStream gzip = new GZIPOutputStream(out);
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
+			final GZIPOutputStream gzip = new GZIPOutputStream(out);
 		    gzip.write(str.getBytes("utf8"));
 		    gzip.close();
 		    return out.toString();

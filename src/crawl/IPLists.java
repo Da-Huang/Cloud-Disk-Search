@@ -23,14 +23,14 @@ public class IPLists {
 	}
 	private IPLists() {
 		try {
-			BufferedReader br = new BufferedReader(
+			final BufferedReader br = new BufferedReader(
 					new InputStreamReader(new FileInputStream("META-INF/ip.list")));
 			String line;
 			while ( (line = br.readLine()) != null ) {
-				int mid = line.indexOf(':');
+				final int mid = line.indexOf(':');
 				if ( mid < 0 ) continue;
-				String ip = line.substring(0, mid).trim();
-				int port = Integer.parseInt(line.substring(mid + 1));
+				final String ip = line.substring(0, mid).trim();
+				final int port = Integer.parseInt(line.substring(mid + 1));
 				ipLists.add(new AbstractMap.SimpleEntry<String, Integer>(ip, port));
 			}
 			br.close();
@@ -41,7 +41,7 @@ public class IPLists {
 		availables = ipLists.size();
 	}
 	
-	private List<Entry<String, Integer>> ipLists = new ArrayList<>();
+	final private List<Entry<String, Integer>> ipLists = new ArrayList<>();
 	private int availables = 0;
 	
 	synchronized public int getRandomIpd() {
@@ -53,9 +53,9 @@ public class IPLists {
 			}
 		}
 		
-		int index = (int) (Math.random() * availables);
+		final int index = (int) (Math.random() * availables);
 		availables --;
-		Entry<String, Integer> tmp = ipLists.get(index);
+		final Entry<String, Integer> tmp = ipLists.get(index);
 		ipLists.set(index, ipLists.get(availables));
 		ipLists.set(availables, tmp);
 		
@@ -67,7 +67,7 @@ public class IPLists {
 	}
 	
 	synchronized public void release(int ipd) {
-		Entry<String, Integer> tmp = ipLists.get(ipd);
+		final Entry<String, Integer> tmp = ipLists.get(ipd);
 		ipLists.set(ipd, ipLists.get(availables));
 		ipLists.set(availables, tmp);
 		availables ++;

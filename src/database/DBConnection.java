@@ -21,15 +21,15 @@ public class DBConnection {
 	private DBConnection() {}
 	
 	public static void main(String[] args) throws SQLException {
-		Connection conn = DBConnection.getConnection();
-		Statement stmt = conn.createStatement();
+		final Connection conn = DBConnection.getConnection();
+		final Statement stmt = conn.createStatement();
 //		ResultSet rs = stmt.executeQuery("SELECT `name`, `url`, `md5` FROM `files`");
 //		while ( rs.next() ) {
 //			System.out.println(rs.getString("name"));
 //			System.out.println(rs.getString("url"));
 //			System.out.println(rs.getString("md5"));
 //		}
-		ResultSet rs = stmt.executeQuery(
+		final ResultSet rs = stmt.executeQuery(
 				"SELECT COUNT(*) FROM `a`");
 		while ( rs.next() ) {
 			System.out.println(rs.getInt(1));
@@ -41,7 +41,7 @@ public class DBConnection {
 
 	public static Connection getConnection() throws SQLException {
 		if ( ds == null ) {
-			Properties prop = Variables.getInstance().getProperties();
+			final Properties prop = Variables.getInstance().getProperties();
 			ds = new BasicDataSource();
 			ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
 			ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));

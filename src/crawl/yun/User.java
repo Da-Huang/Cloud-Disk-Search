@@ -14,11 +14,7 @@ public class User {
 		this.fans = fans;
 		this.shares = shares;
 	}
-	
-	public void crawl() {
-		
-	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();

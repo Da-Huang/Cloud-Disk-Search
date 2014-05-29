@@ -12,8 +12,8 @@ public class FileType {
 	public static String OFFICE = "office";
 	public static String UNKNOWN = "unknown";
 	
-	private static Map<String, String> TYPE_MAP = new HashMap<>();
-	private static Map<String, String> TYPES = new HashMap<>();
+	final private static Map<String, String> TYPE_MAP = new HashMap<>();
+	final private static Map<String, String> TYPES = new HashMap<>();
 	
 	static {
 		TYPES.put(FileType.IMAGE, "jpg|jpeg|bmp|png|gif|ai|psd|tiff|pcx|raw");
@@ -37,7 +37,7 @@ public class FileType {
 	}
 	
 	public static String getType(String postfix) {
-		String type = TYPE_MAP.get(postfix);
+		final String type = TYPE_MAP.get(postfix);
 		return type == null ? FileType.UNKNOWN : type;
 	}
 	

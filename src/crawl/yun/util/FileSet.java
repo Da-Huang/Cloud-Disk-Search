@@ -36,7 +36,7 @@ public class FileSet {
 					+ "  `time` BIGINT,"
 					+ "  `downloads` INT,"
 					+ "  `visits` INT,"
-					+ "  `saves` INT,"
+					+ "  `saves` INT"
 					+ ")");
 			try {
 				stmt.executeUpdate(""
@@ -105,20 +105,20 @@ public class FileSet {
 			String desc, long time, int downloads, int visits, int saves) {
 		logger.entry(uk, md5, title, url, size, desc, downloads, visits, saves);
 		boolean res = true;
-		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(String.format(""
-					+ "INSERT INTO `files` (`uk`, `md5`, `title`, `url`, `size`, "
-					+ "`desc`, `time`, `downloads`, `visits`, `saves`) "
-					+ "VALUES (%d, '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d)", 
-					uk, md5, title, url, size, desc, time, downloads, visits, saves));
-			stmt.close();
-			conn.close();
-		} catch (SQLException e) {
-			logger.error(e);
-			res = false;
-		}
+//		try {
+//			Connection conn = DBConnection.getConnection();
+//			Statement stmt = conn.createStatement();
+//			stmt.executeUpdate(String.format(""
+//					+ "INSERT INTO `files` (`uk`, `md5`, `title`, `url`, `size`, "
+//					+ "`desc`, `time`, `downloads`, `visits`, `saves`) "
+//					+ "VALUES (%d, '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d)", 
+//					uk, md5, title, url, size, desc, time, downloads, visits, saves));
+//			stmt.close();
+//			conn.close();
+//		} catch (SQLException e) {
+//			logger.error(e);
+//			res = false;
+//		}
 		return res;
 	}
 	

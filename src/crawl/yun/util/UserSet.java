@@ -25,8 +25,8 @@ public class UserSet {
 	}
 	private UserSet() {
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
 			stmt.executeUpdate(""
 					+ "CREATE TABLE IF NOT EXISTS `users` ("
 					+ "  `uk` BIGINT PRIMARY KEY,"
@@ -88,8 +88,8 @@ public class UserSet {
 		logger.entry(uk, uname, follows, fans, shares);
 		boolean res = true;
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
 			try {
 				stmt.executeUpdate(String.format(""
 						+ "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
@@ -109,8 +109,8 @@ public class UserSet {
 	
 	public void setDealing(long uk, boolean dealing) {
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
 			stmt.executeUpdate(String.format(""
 					+ "UPDATE `users` SET `dealing` = %d "
 					+ "WHERE `uk` = %d", dealing ? 1 : 0, uk));
@@ -123,8 +123,8 @@ public class UserSet {
 
 	public void setCrawled(long uk, boolean crawled) {
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
 			stmt.executeUpdate(String.format(""
 					+ "UPDATE `users` SET `crawled` = %d "
 					+ "WHERE `uk` = %d", crawled ? 1 : 0, uk));
@@ -138,9 +138,9 @@ public class UserSet {
 	public List<User> getUndealingUsers(int limit) {
 		List<User> users = new ArrayList<User>();
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(String.format(""
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
+			final ResultSet rs = stmt.executeQuery(String.format(""
 					+ "SELECT * "
 					+ "FROM `users` WHERE dealing = 0 "
 					+ "LIMIT %d", limit));
@@ -162,9 +162,9 @@ public class UserSet {
 	public int uncrawledSize() {
 		int size = 0;
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(""
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
+			final ResultSet rs = stmt.executeQuery(""
 					+ "SELECT COUNT(*) FROM `users` "
 					+ "WHERE crawled = 0");
 			if ( rs.next() ) size = rs.getInt(1);
@@ -180,9 +180,9 @@ public class UserSet {
 	public int size() {
 		int size = 0;
 		try {
-			Connection conn = DBConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(""
+			final Connection conn = DBConnection.getConnection();
+			final Statement stmt = conn.createStatement();
+			final ResultSet rs = stmt.executeQuery(""
 					+ "SELECT COUNT(*) FROM `users`");
 			if ( rs.next() ) size = rs.getInt(1);
 			rs.close();

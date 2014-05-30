@@ -58,7 +58,8 @@ public class UserThreadCrawler extends ThreadCrawler {
 		join();
 		logger.trace("Hot fan crawling finished.");
 
-		users = UserSet.getInstance().getUndealingUsers(1000);
+		final int BLOCK_SIZE = 1000;
+		users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
 		while ( users.size() > 0 ) {
 			for (final User user : users) {
 				logger.info("crawling " + user.uname + "'s follows.");
@@ -75,7 +76,7 @@ public class UserThreadCrawler extends ThreadCrawler {
 				}
 				logger.info(user.uname + "'s follows crawled.");
 			}
-			users = UserSet.getInstance().getUndealingUsers(1000);
+			users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
 			while ( users.size() == 0 ) {
 				final int uncrawledSize = UserSet.getInstance().uncrawledSize();
 				if ( uncrawledSize == 0 ) break;
@@ -86,11 +87,11 @@ public class UserThreadCrawler extends ThreadCrawler {
 						logger.error(e);
 					}
 				}
-				users = UserSet.getInstance().getUndealingUsers(1000);
+				users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
 			}
 		}
 		join();
-		logger.trace("Follow crawling crawling finished.");
+		logger.trace("Follows crawling finished.");
 		logger.exit();
 	}
 

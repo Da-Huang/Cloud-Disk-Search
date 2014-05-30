@@ -31,6 +31,7 @@ public class UserSet {
 					+ "CREATE TABLE IF NOT EXISTS `users` ("
 					+ "  `uk` BIGINT PRIMARY KEY,"
 					+ "  `uname` TEXT,"
+					+ "  `desc` TEXT,"
 					+ "  `follows` INT,"
 					+ "  `fans` INT,"
 					+ "  `shares` INT,"

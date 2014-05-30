@@ -18,7 +18,7 @@ import net.sf.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import crawl.IPLists;
+import crawl.IPList;
 
 
 public class Request {
@@ -37,18 +37,8 @@ public class Request {
 		HEADER.put("User-Agent", "MMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36");
 	}
 	
-//	public static void main(String[] args) throws Exception {
-//		Map<String, String> props = new HashMap<String, String>();
-//		props.put("hot_type", "0");
-//		props.put("start", "0");
-//		props.put("limit", "25");
-//		JSONObject jo = Request.request(
-//				"http://yun.baidu.com/pcloud/friend/gethotuserlist", props);
-//		System.out.println(jo);
-//	}
-	
 	static public JSONObject requestForceYun(String urlStr, Map<String, String> args) {
-		JSONObject res = requestForce(urlStr, args);
+		JSONObject res = requestJSONForce(urlStr, args);
 		int tryTimes = 0;
 		while ( res.containsKey("errno") && res.getInt("errno") == -55 ) {
 			++ tryTimes;
@@ -58,17 +48,18 @@ public class Request {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			res = requestForce(urlStr, args);
+			res = requestJSONForce(urlStr, args);
 		}
 		return res;
 	}
 
-	static public JSONObject requestForce(String urlStr, Map<String, String> args) {
+	static public JSONObject requestJSONForce(String urlStr, Map<String, String> args) {
 		JSONObject res = null;
 		int tryTimes = 0;
 		while ( res == null ) {
+			final int ipd = IPList.getInstance().open();
 			try {
-				res = request(urlStr, args);
+				res = requestJSON(urlStr, args, ipd);
 			} catch (Exception e) {
 				++ tryTimes;
 				logger.error(e + " --- " + tryTimes);
@@ -78,25 +69,40 @@ public class Request {
 					logger.error(e1);
 				}
 			}
+			IPList.getInstance().close(ipd);
 		}
 		return res;
 	}
 	
-	static public JSONObject request(String urlStr, Map<String, String> args) throws Exception {
-		urlStr += "?";
-		for (String key : args.keySet()) {
-			urlStr += key;
-			urlStr += "=";
-			urlStr += URLEncoder.encode(args.get(key), "utf8");
-			urlStr += "&";
+	static public String requestPlainForce(String urlStr, Map<String, String> args) {
+		String res = null;
+		int tryTimes = 0;
+		while ( res == null ) {
+			final int ipd = IPList.getInstance().open();
+			try {
+				res = requestPlain(urlStr, args, ipd);
+			} catch (Exception e) {
+				++ tryTimes;
+				logger.error(e + " --- " + tryTimes);
+				e.printStackTrace();
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
+			}
+			IPList.getInstance().close(ipd);
 		}
+		return res;
+	}
+	
+	static private String request(String urlStr, int ipd) throws Exception {
 		final URL url = new URL(urlStr);
 		logger.info(url);
 		InputStream in = null;
 		HttpURLConnection conn = null;
 
-		final int ipd = IPLists.getInstance().getRandomIpd();
-		final Entry<String, Integer> address = IPLists.getInstance().get(ipd);
+		final Entry<String, Integer> address = IPList.getInstance().get(ipd);
 		if ( address != null ) {
 			final String ip = address.getKey();
 			final int port = address.getValue();
@@ -116,8 +122,11 @@ public class Request {
 		conn.connect();
 		in = conn.getInputStream();
 		final String encoding = conn.getHeaderField("Content-Encoding");
-		if ( encoding != null && encoding.equals("gzip") ) in = new GZIPInputStream(in);
-		final BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
+		if ( encoding != null && encoding.equalsIgnoreCase("gzip") ) in = new GZIPInputStream(in);
+		final String type = conn.getHeaderField("Content-Type");
+		final String charset = type == null ? "utf8" : getCharset(type);
+		logger.debug(type);
+		final BufferedReader br = new BufferedReader(new InputStreamReader(in, charset));
 		final StringBuffer response = new StringBuffer();
 		String line;
 		while ( (line = br.readLine()) != null ) {
@@ -127,9 +136,34 @@ public class Request {
 		br.close();
 		conn.disconnect();
 		
-		IPLists.getInstance().release(ipd);
-		logger.exit(response.substring(0, Math.min(response.length(), 100)) + "...");
-//		logger.exit(response);
-		return JSONObject.fromObject(response.toString().trim());
+		final String res = response.toString().trim();
+		logger.exit(res.substring(0, Math.min(res.length(), 100)).replaceAll("[\n\r]", "") + "...");
+		return res;
+	}
+	
+	static private String getCharset(String type) {
+		type = type.toLowerCase();
+		int index = type.indexOf("charset=");
+		type = type.substring(index + "charset=".length());
+		index = type.indexOf(";");
+		if ( index >= 0 ) type = type.substring(0, index);
+		return type;
+	}
+	
+	static private JSONObject requestJSON(String urlStr, Map<String, String> args, int ipd) throws Exception {
+		String plain = requestPlain(urlStr, args, ipd);
+		return JSONObject.fromObject(plain);
+	}
+
+	static private String requestPlain(String urlStr, Map<String, String> args, int ipd) throws Exception {
+		urlStr += "?";
+		for (String key : args.keySet()) {
+			urlStr += key;
+			urlStr += "=";
+			urlStr += URLEncoder.encode(args.get(key), "utf8");
+			urlStr += "&";
+		}
+		String response = request(urlStr, ipd);
+		return response;
 	}
 }

@@ -16,6 +16,11 @@ import crawl.yun.util.FileSet;
 public class YunFileCrawler {
 	private static final Logger logger = LogManager.getLogger(YunFileCrawler.class);
 	
+	public static void main(String[] args) {
+//		YunFileCrawler.crawl();
+		YunFileCrawler.crawl(3158078488L);
+	}
+	
 	/**
 	 * @param uk user id
 	 */
@@ -35,15 +40,38 @@ public class YunFileCrawler {
 	 * @param sid share id
 	 * @param dir directory path
 	 */
-	static private JSONObject fetchDir(long uk, long sid, String dir, int page) {
-		logger.entry(uk, sid, dir, page);
+	static private JSONObject fetchDir(long uk, long sid, String title, int page) {
+		logger.entry(uk, sid, title, page);
 		final String urlBase = "http://yun.baidu.com/share/list";
+		String dir = fetchParentPath(uk, sid);
+		if ( dir == null ) return null;
+		dir += "/";
+		dir += title;
 		final Map<String, String> args = new HashMap<String, String>();
 		args.put("uk", String.valueOf(uk));
-		args.put("sid", String.valueOf(sid));
+		args.put("shareid", String.valueOf(sid));
 		args.put("dir", dir);
 		args.put("page", String.valueOf(page));
 		return Request.requestForceYun(urlBase, args);
+	}
+	
+	static private String fetchParentPath(long uk, long sid) {
+		final String urlBase = "http://pan.baidu.com/share/link";
+		final Map<String, String> args = new HashMap<String, String>();
+		args.put("uk", String.valueOf(uk));
+		args.put("shareid", String.valueOf(sid));
+		final String page = Request.requestPlainForce(urlBase, args);
+		int begin = page.indexOf("parent_path\\\":\\\"");
+		if ( begin < 0 ) return null;
+		begin += "parent_path\\\":\\\"".length();
+		final int end = page.indexOf("\\\"", begin);
+		String parentPath = page.substring(begin, end);
+		try {
+			parentPath = URLDecoder.decode(parentPath, "utf8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return parentPath;
 	}
 	
 	/**
@@ -63,7 +91,7 @@ public class YunFileCrawler {
 	
 	static private void saveFilesInTopLevel(JSONObject record) {
 		final String urlBase = "http://yun.baidu.com/share/link";
-		final long uk = Integer.parseInt(record.getString("uk"));
+		final long uk = Long.parseLong(record.getString("uk"));
 		final long sid = Long.parseLong(record.getString("shareid"));
 		final String title = record.getString("title");
 		final long time = Long.parseLong(record.getString("feed_time"));
@@ -128,12 +156,12 @@ public class YunFileCrawler {
 
 			if ( isDir ) {
 				// directory
-				final String path = decodePath(file.getString("path"));
+				final String name = file.getString("server_filename");
 				final String desc = record.getString("desc");
 				final int downloads = Integer.parseInt(record.getString("dCnt"));
 				final int visits = Integer.parseInt(record.getString("vCnt"));
 				final int saves = Integer.parseInt(record.getString("tCnt"));
-				crawlDir(uk, sid, path, desc, downloads, visits, saves);
+				crawlDir(uk, sid, name, desc, downloads, visits, saves);
 				
 			} else {
 				// file
@@ -153,39 +181,17 @@ public class YunFileCrawler {
 		} else return false;
 	}
 	
-	static private boolean dealWithRecordInDir(long uk, long sid, String dir, String desc, 
+	static private boolean dealWithRecordInDir(long uk, long sid, String desc, 
 			int downloads, int visits, int saves, JSONObject record) {
 		final boolean isDir = Integer.parseInt(record.getString("isdir")) != 0;
 		if ( isDir ) {
-			final String path = decodePath(record.getString("path"));
-			crawlDir(uk, sid, path, desc, downloads, visits, saves);
+			final String name = record.getString("server_filename"); 
+			crawlDir(uk, sid, name, desc, downloads, visits, saves);
 			
 		} else {
 			saveFilesInDir(uk, sid, desc, downloads, visits, saves, record);
 		}
 		return true;
-	}
-	
-	/**
-	 * Decode a path value to utf8
-	 * @param path path value in json
-	 * @return path coded in utf8
-	 */
-	static private String decodePath(String path) {
-		if ( path.startsWith("%") ) {
-			try {
-				path = URLDecoder.decode(path, "utf8");
-			} catch (UnsupportedEncodingException e) {
-				logger.error(e);
-			}
-		} else {
-			try {
-				path = new String(path.getBytes(), "utf8");
-			} catch (UnsupportedEncodingException e) {
-				logger.error(e);
-			}
-		}
-		return path;
 	}
 	
 	static public void crawl(long uk) {
@@ -235,21 +241,37 @@ public class YunFileCrawler {
 		logger.exit();
 	}
 	
-	static public void crawlDir(long uk, long sid, String dir, String desc, 
+	static public void crawlDir(long uk, long sid, String name, String desc, 
 			int downloads, int visits, int saves) {
-		logger.entry(uk, sid, dir);
+		logger.entry(uk, sid, name);
 		int page = 1;
 		while ( true ) {
-			final JSONObject data = fetchDir(uk, sid, dir, page);
+			final JSONObject data = fetchDir(uk, sid, name, page);
+			if ( data == null ) break;
 			final int errno = Integer.parseInt(data.optString("errno", "-1"));
 			if ( errno != 0 ) break;
-			final JSONArray list = data.getJSONArray("records");
+			final JSONArray list = data.getJSONArray("list");
 			for (int i = 0; i < list.size(); i ++) {
 				final JSONObject record = list.getJSONObject(i);
-				dealWithRecordInDir(uk, sid, dir, desc, downloads, visits, saves, record);
+				dealWithRecordInDir(uk, sid, desc, downloads, visits, saves, record);
 			}
+			page ++;
 			if ( list.size() == 0 ) break;
 		}
+		logger.exit();
+	}
+	
+	static public void crawl() {
+		logger.entry();
+		YunFileThreadCrawler yunFileThreadCrawler = new YunFileThreadCrawler();
+		final Thread thread = new Thread(yunFileThreadCrawler);
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			logger.error(e);
+		}
+		yunFileThreadCrawler.shutdown();
 		logger.exit();
 	}
 }

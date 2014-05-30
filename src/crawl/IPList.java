@@ -13,15 +13,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class IPLists {
-	private static final Logger logger = LogManager.getLogger(IPLists.class);
-	private static IPLists instance = null;
-	public static IPLists getInstance() {
+public class IPList {
+	private static final Logger logger = LogManager.getLogger(IPList.class);
+	private static IPList instance = null;
+	public static IPList getInstance() {
 		if ( instance == null )
-			instance = new IPLists();
+			instance = new IPList();
 		return instance;
 	}
-	private IPLists() {
+	private IPList() {
 		try {
 			final BufferedReader br = new BufferedReader(
 					new InputStreamReader(new FileInputStream("META-INF/ip.list")));
@@ -42,9 +42,15 @@ public class IPLists {
 	}
 	
 	final private List<Entry<String, Integer>> ipLists = new ArrayList<>();
-	private int availables = 0;
+	private int availables;
 	
-	synchronized public int getRandomIpd() {
+	/**
+	 * Open a random ip descriptor, which can be used to 
+	 * acquire ip by <code>get(int ipd)</code>. <br>
+	 * The descriptor need to be closed after used. 
+	 * @return ip descriptor.
+	 */
+	synchronized public int open() {
 		while ( availables <= 0 ) {
 			try {
 				wait();
@@ -59,6 +65,7 @@ public class IPLists {
 		ipLists.set(index, ipLists.get(availables));
 		ipLists.set(availables, tmp);
 		
+		logger.trace("ipd=availables=" + availables);
 		return availables;
 	}
 	
@@ -66,7 +73,12 @@ public class IPLists {
 		return ipLists.get(ipd);
 	}
 	
-	synchronized public void release(int ipd) {
+	/**
+	 * Close the ip descriptor.
+	 * @param ipd ip descriptor
+	 */
+	synchronized public void close(int ipd) {
+		logger.trace("ipd=" + ipd + ",availables=" + availables);
 		final Entry<String, Integer> tmp = ipLists.get(ipd);
 		ipLists.set(ipd, ipLists.get(availables));
 		ipLists.set(availables, tmp);

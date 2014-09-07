@@ -1,6 +1,6 @@
 EMPTY = 
 SPACE = $(EMPTY) $(EMPTY)
-CLASSPATH = $(subst $(SPACE),:,$(wildcard lib/*.jar))
+CLASSPATH = lib/*:
 JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src -encoding utf8
 JAVAC = javac
 

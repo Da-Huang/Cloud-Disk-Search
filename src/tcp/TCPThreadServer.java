@@ -11,49 +11,49 @@ import org.apache.logging.log4j.Logger;
 import util.Variables;
 
 public class TCPThreadServer implements Runnable {
-	private static final Logger logger = LogManager.getLogger(TCPThreadServer.class);
-	
-	private boolean stop = false;
-	private static final int maxThreadsNum = Integer.parseInt(
-			Variables.getInstance().getProperty("threadNum"));
-	private final ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
-	private ServerSocket server = null;
-	
-	public TCPThreadServer() {
-		this(Integer.parseInt(Variables.getInstance().getProperties().getProperty("port")));
-	}
-	public TCPThreadServer(int port) {
-		try {
-			server = new ServerSocket(port);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		final Thread thread = new Thread(new TCPThreadServer());
-		thread.start();
-		thread.join();
-	}
-	
+  private static final Logger logger = LogManager.getLogger(TCPThreadServer.class);
 
-	@Override
-	public void run() {
-		while ( !stop ) {
-			try {
-				threadPool.execute(new TCPWorker(server.accept()));
-			} catch (IOException e) {
-				logger.error("Server Stoped.");
-			}
-		}
-	}
-	
-	public void stop() {
-		stop = true;
-		try {
-			server.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+  private boolean stop = false;
+  private static final int maxThreadsNum = Integer.parseInt(
+      Variables.getInstance().getProperty("threadNum"));
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
+  private ServerSocket server = null;
+
+  public TCPThreadServer() {
+    this(Integer.parseInt(Variables.getInstance().getProperties().getProperty("port")));
+  }
+  public TCPThreadServer(int port) {
+    try {
+      server = new ServerSocket(port);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    final Thread thread = new Thread(new TCPThreadServer());
+    thread.start();
+    thread.join();
+  }
+
+
+  @Override
+  public void run() {
+    while ( !stop ) {
+      try {
+        threadPool.execute(new TCPWorker(server.accept()));
+      } catch (IOException e) {
+        logger.error("Server Stoped.");
+      }
+    }
+  }
+
+  public void stop() {
+    stop = true;
+    try {
+      server.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }

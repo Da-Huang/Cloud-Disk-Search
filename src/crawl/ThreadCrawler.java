@@ -10,52 +10,52 @@ import util.Variables;
 
 
 public abstract class ThreadCrawler implements Runnable {
-	private static final Logger logger = LogManager.getLogger(ThreadCrawler.class);
-	
-	protected static final int maxThreadsNum = Integer.parseInt(
-			Variables.getInstance().getProperty("threadNum"));
-	public int threadsNum = 0;
-	protected ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
+  private static final Logger logger = LogManager.getLogger(ThreadCrawler.class);
 
-	/**
-	 * Wait until all threads are finished.
-	 */
-	public void join() {
-		synchronized (this) {
-			while ( threadsNum > 0 ) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					logger.error(e);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Shutdown the thread crawler.
-	 */
-	final public void shutdown() {
-		threadPool.shutdown();
-	}
-	
-	/**
-	 * It's usage is as follows.<br>
-	 * <code>
-	 * synchronized (this) {
-	 *   waitForIdle();
-	 *   // do something
-	 * }
-	 * </code>
-	 */
-	public void waitForIdle() {
-		while ( threadsNum >= maxThreadsNum ) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				logger.error(e);
-			}
-		}
-		threadsNum ++;
-	}
+  protected static final int maxThreadsNum = Integer.parseInt(
+      Variables.getInstance().getProperty("threadNum"));
+  public int threadsNum = 0;
+  protected ExecutorService threadPool = Executors.newFixedThreadPool(maxThreadsNum);
+
+  /**
+   * Wait until all threads are finished.
+   */
+  public void join() {
+    synchronized (this) {
+      while ( threadsNum > 0 ) {
+        try {
+          wait();
+        } catch (InterruptedException e) {
+          logger.error(e);
+        }
+      }
+    }
+  }
+
+  /**
+   * Shutdown the thread crawler.
+   */
+  final public void shutdown() {
+    threadPool.shutdown();
+  }
+
+  /**
+   * It's usage is as follows.<br>
+   * <code>
+   * synchronized (this) {
+   *   waitForIdle();
+   *   // do something
+   * }
+   * </code>
+   */
+  public void waitForIdle() {
+    while ( threadsNum >= maxThreadsNum ) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        logger.error(e);
+      }
+    }
+    threadsNum ++;
+  }
 }

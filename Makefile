@@ -1,14 +1,14 @@
 EMPTY = 
 SPACE = $(EMPTY) $(EMPTY)
 CLASSPATH = lib/*:
-JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src -encoding utf8
+JCFLAGS = -d bin -cp $(CLASSPATH) -sourcepath src -encoding utf8 -proc:none
 JAVAC = javac
 
 TEXT_TEMPLATE = "\033[36mTEXT\033[0m"
 COMMA = ","
 
-SOURCE_JAVA = $(shell find src -name *.java)
-SOURCE_XML = $(shell find src -name *.xml)
+SOURCE_JAVA = $(shell find src -name "*.java")
+SOURCE_XML = $(shell find src -name "*.xml")
 CLASS_FILES = \
 $(foreach file,$(SOURCE_JAVA),$(patsubst src%.java,bin%.class,$(file))) \
 $(foreach file,$(SOURCE_XML),$(patsubst src%,bin%,$(file)))

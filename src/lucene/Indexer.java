@@ -47,8 +47,8 @@ public class Indexer {
     final Date start = new Date();
     final Directory dir = FSDirectory.open(new File(
         Variables.getInstance().getProperties().getProperty("indexPath")));
-    final Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
-    final IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
+    final Analyzer analyzer = new SmartChineseAnalyzer();
+    final IndexWriterConfig iwc = new IndexWriterConfig(Version.LATEST, analyzer);
 
     if ( create ) {
       iwc.setOpenMode(OpenMode.CREATE);

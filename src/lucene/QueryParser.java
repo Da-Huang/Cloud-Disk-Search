@@ -10,15 +10,14 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.util.Version;
 
-import database.FileType;
 import util.Variables;
+import database.FileType;
 
 
 public class QueryParser {
@@ -41,7 +40,7 @@ public class QueryParser {
 
   public Query parseAsField(String qText, String field) throws IOException {
     logger.entry(qText, field);
-    final Analyzer analyzer = new SmartChineseAnalyzer(Version.LUCENE_46);
+    final Analyzer analyzer = new SmartChineseAnalyzer();
     final TokenStream stream = analyzer.tokenStream(null, new StringReader(qText));
     final CharTermAttribute cattr = stream.addAttribute(CharTermAttribute.class);
     stream.reset();

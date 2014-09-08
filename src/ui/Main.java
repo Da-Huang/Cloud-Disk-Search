@@ -23,7 +23,6 @@ import crawl.yun.util.UserSet;
 import tcp.TCPThreadServer;
 import util.Variables;
 
-
 class Args4J {
   @Option(name = "-index", usage = "Index Data.")
   boolean doIndex;

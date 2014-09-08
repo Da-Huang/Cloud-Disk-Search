@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #coding: utf8
 
 echo Please input according to hints.

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #coding: utf8
 
 echo Running the TCP Server.

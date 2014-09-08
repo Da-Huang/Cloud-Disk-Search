@@ -1,0 +1,11 @@
+<project xmlns:ivy='antlib:org.apache.ivy.ant' name='Cloud-Disk-Search' default='resolve'>
+
+  <condition property='ivy.exclude.types' value='' else='source|javadoc'>
+    <isset property='fetch.sources.javadocs' />
+  </condition>
+  <property name='ivy.checksums' value='' />
+
+  <target name='resolve' description='--> retrieve dependencies with ivy'>
+    <ivy:retrieve pattern='lib/[artifact]-[revision](-[classifier]).[ext]' />
+  </target>
+</project>

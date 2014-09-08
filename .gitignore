@@ -12,3 +12,6 @@ bin
 logs
 *.gz
 *.db
+
+# ant
+.ant-targets-build.xml

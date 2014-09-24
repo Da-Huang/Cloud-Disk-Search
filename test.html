@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <meta charset="utf8">
-<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <body>
 <form id="search">
@@ -13,22 +13,22 @@
 <div id="res"></div>
 
 <script language="javascript" type="text/javascript">
-$('#searchButton').click(function() {
-  var query = $('#query')[0].value;
-  console.log('query: ' + query);
-  $('#res')[0].innerText = 'waiting ...';
+$("#searchButton").click(function() {
+  var query = $("#query")[0].value;
+  console.log("query: " + query);
+  $("#res")[0].innerText = "waiting ...";
 
-//  $.get('http://127.0.0.1:7777/search', {
-  $.get('http://162.105.205.253:7777/search', {
-    'keywords' : query,
-    'fileType' : 'all',
-    'start' : 0,
-    'limit' : 100,
+//  $.get("http://127.0.0.1:7777/search", {
+  $.get("http://162.105.205.253:7777/search", {
+    "keywords" : query,
+    "fileType" : "all",
+    "start" : 0,
+    "limit" : 100,
   }).done(function(data) {
     console.log(data);
-    $('#res')[0].innerText = JSON.stringify(data);
+    $("#res")[0].innerText = JSON.stringify(data);
   }).fail(function(data) {
-    $('#res')[0].innerText = 'something very bad happened'
+    $("#res")[0].innerText = "something very bad happened"
   });
 })
 </script>

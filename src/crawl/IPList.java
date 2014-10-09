@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import util.Variables;
+
 
 public class IPList {
   private static final Logger logger = LogManager.getLogger(IPList.class);
@@ -24,7 +26,7 @@ public class IPList {
   private IPList() {
     try {
       final BufferedReader br = new BufferedReader(
-          new InputStreamReader(new FileInputStream("META-INF/ip.list")));
+          new InputStreamReader(new FileInputStream(Variables.getInstance().getProperty("iplist"))));
       String line;
       while ( (line = br.readLine()) != null ) {
         final int mid = line.indexOf(':');

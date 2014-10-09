@@ -31,7 +31,7 @@ public class UserSet {
           + "CREATE TABLE IF NOT EXISTS `users` ("
           + "  `uk` BIGINT PRIMARY KEY,"
           + "  `uname` TEXT,"
-          + "  `desc` TEXT,"
+          + "  `intro` TEXT,"
           + "  `follows` INT,"
           + "  `fans` INT,"
           + "  `shares` INT,"
@@ -85,16 +85,16 @@ public class UserSet {
     }
   }
 
-  public boolean add(long uk, String uname, int follows, int fans, int shares) {
-    logger.entry(uk, uname, follows, fans, shares);
+  public boolean add(long uk, String uname, String intro, int follows, int fans, int shares) {
+    logger.entry(uk, uname, intro, follows, fans, shares);
     boolean res = true;
     try {
       final Connection conn = DBConnection.getConnection();
       final Statement stmt = conn.createStatement();
       try {
         stmt.executeUpdate(String.format(""
-            + "INSERT INTO `users` (`uk`, `uname`, `follows`, `fans`, `shares`) "
-            + "VALUES (%d, '%s', %d, %d, %d)", uk, uname, follows, fans, shares));
+            + "INSERT INTO `users` (`uk`, `uname`, `intro`, `follows`, `fans`, `shares`) "
+            + "VALUES (%d, '%s', '%s', %d, %d, %d)", uk, uname, intro, follows, fans, shares));
       } catch (SQLException e) {
         logger.error(e + " : <" + uk + ":" + uname + ">");
         res = false;
@@ -147,7 +147,7 @@ public class UserSet {
           + "LIMIT %d", limit));
       while ( rs.next() ) {
         users.add(new User(
-            rs.getLong("uk"), rs.getString("uname"),
+            rs.getLong("uk"), rs.getString("uname"), rs.getString("intro"),
             rs.getInt("follows"), rs.getInt("fans"),
             rs.getInt("shares")));
       }

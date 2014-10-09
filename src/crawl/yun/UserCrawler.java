@@ -86,28 +86,31 @@ public class UserCrawler {
   static private void saveFirst(JSONObject user) {
     final long uk = Long.parseLong(user.getString("hot_uk"));
     final String uname = user.getString("hot_uname");
+    final String intro = user.getString("intro");
     final int follows = Integer.parseInt(user.getString("follow_count"));
     final int fans = Integer.parseInt(user.getString("fans_count"));
     final int shares = Integer.parseInt(user.getString("pubshare_count"));
-    UserSet.getInstance().add(uk, uname, follows, fans, shares);
+    UserSet.getInstance().add(uk, uname, intro, follows, fans, shares);
   }
 
   static private void saveFollow(JSONObject user) {
     final long uk = Long.parseLong(user.getString("follow_uk"));
     final String uname = user.getString("follow_uname");
+    final String intro = user.getString("intro");
     final int follows = Integer.parseInt(user.getString("follow_count"));
     final int fans = Integer.parseInt(user.getString("fans_count"));
     final int shares = Integer.parseInt(user.getString("pubshare_count"));
-    UserSet.getInstance().add(uk, uname, follows, fans, shares);
+    UserSet.getInstance().add(uk, uname, intro, follows, fans, shares);
   }
 
   static private void saveFan(JSONObject user) {
     final long uk = Long.parseLong(user.getString("fans_uk"));
     final String uname = user.getString("fans_uname");
+    final String intro = user.getString("intro");
     final int follows = Integer.parseInt(user.getString("follow_count"));
     final int fans = Integer.parseInt(user.getString("fans_count"));
     final int shares = Integer.parseInt(user.getString("pubshare_count"));
-    UserSet.getInstance().add(uk, uname, follows, fans, shares);
+    UserSet.getInstance().add(uk, uname, intro, follows, fans, shares);
   }
 
   static public void crawlFollow(long uk) {

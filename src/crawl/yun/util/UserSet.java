@@ -16,11 +16,13 @@ import database.DBConnection;
 
 public class UserSet {
   private static final Logger logger = LogManager.getLogger(UserSet.class);
+  public static void main(String[] args) {
+	UserSet.getInstance();
+  }
 
   private static UserSet instance = null;
   public static UserSet getInstance() {
-    if ( instance == null )
-      instance = new UserSet();
+    if ( instance == null ) instance = new UserSet();
     return instance;
   }
   private UserSet() {
@@ -35,8 +37,8 @@ public class UserSet {
           + "  `follows` INT,"
           + "  `fans` INT,"
           + "  `shares` INT,"
-          + "  `dealing` BOOLEAN DEFAULT 0,"
-          + "  `crawled` BOOLEAN DEFAULT 0"
+          + "  `status` CHAR(16) DEFAULT 'ready1'"
+          + "  CHECK `status` IN ('ready1', 'running1', 'ready2', 'running2', 'done')"
           + ")");
       try {
         stmt.executeUpdate(""
@@ -64,16 +66,8 @@ public class UserSet {
       }
       try {
         stmt.executeUpdate(""
-            + "CREATE INDEX `users_dealing` "
-            + "ON `users` (`dealing`)");
-      } catch (SQLException e) {
-        if ( !e.toString().contains("Duplicate key name") )
-          logger.error(e);
-      }
-      try {
-        stmt.executeUpdate(""
-            + "CREATE INDEX `users_crawled` "
-            + "ON `users` (`crawled`)");
+            + "CREATE INDEX `users_status` "
+            + "ON `users` (`status`)");
       } catch (SQLException e) {
         if ( !e.toString().contains("Duplicate key name") )
           logger.error(e);
@@ -108,13 +102,13 @@ public class UserSet {
     return res;
   }
 
-  public void setDealing(long uk, boolean dealing) {
+  public void setStatus(long uk, String status) {
     try {
       final Connection conn = DBConnection.getConnection();
       final Statement stmt = conn.createStatement();
       stmt.executeUpdate(String.format(""
-          + "UPDATE `users` SET `dealing` = %d "
-          + "WHERE `uk` = %d", dealing ? 1 : 0, uk));
+            + "UPDATE `users` SET `status` = '%s' "
+            + "WHERE `uk` = %d", status, uk));
       stmt.close();
       conn.close();
     } catch (SQLException e) {
@@ -122,29 +116,15 @@ public class UserSet {
     }
   }
 
-  public void setCrawled(long uk, boolean crawled) {
-    try {
-      final Connection conn = DBConnection.getConnection();
-      final Statement stmt = conn.createStatement();
-      stmt.executeUpdate(String.format(""
-          + "UPDATE `users` SET `crawled` = %d "
-          + "WHERE `uk` = %d", crawled ? 1 : 0, uk));
-      stmt.close();
-      conn.close();
-    } catch (SQLException e) {
-      logger.error(e);
-    }
-  }
-
-  public List<User> getUndealingUsers(int limit) {
+  public List<User> getStatusUsers(String status, int limit) {
     List<User> users = new ArrayList<User>();
     try {
       final Connection conn = DBConnection.getConnection();
       final Statement stmt = conn.createStatement();
       final ResultSet rs = stmt.executeQuery(String.format(""
           + "SELECT * "
-          + "FROM `users` WHERE dealing = 0 "
-          + "LIMIT %d", limit));
+          + "FROM `users` WHERE status = '%s' "
+          + "LIMIT %d", status, limit));
       while ( rs.next() ) {
         users.add(new User(
             rs.getLong("uk"), rs.getString("uname"), rs.getString("intro"),
@@ -160,14 +140,14 @@ public class UserSet {
     return users;
   }
 
-  public int uncrawledSize() {
+  public int statusSize(String status) {
     int size = 0;
     try {
       final Connection conn = DBConnection.getConnection();
       final Statement stmt = conn.createStatement();
-      final ResultSet rs = stmt.executeQuery(""
+      final ResultSet rs = stmt.executeQuery(String.format(""
           + "SELECT COUNT(*) FROM `users` "
-          + "WHERE crawled = 0");
+          + "WHERE `status` = '%s'", status));
       if ( rs.next() ) size = rs.getInt(1);
       rs.close();
       stmt.close();

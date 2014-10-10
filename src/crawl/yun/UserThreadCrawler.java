@@ -42,7 +42,7 @@ public class UserThreadCrawler extends ThreadCrawler {
     join();
     logger.trace("Hot crawling finished.");
 
-    users = UserSet.getInstance().getUndealingUsers(Integer.MAX_VALUE);
+    users = UserSet.getInstance().getStatusUsers("ready1", Integer.MAX_VALUE);
     for (final User user : users) {
       logger.info("crawling " + user.uname + "'s fans.");
       synchronized (this) {
@@ -59,35 +59,35 @@ public class UserThreadCrawler extends ThreadCrawler {
     logger.trace("Hot fan crawling finished.");
 
     final int BLOCK_SIZE = 1000;
-    users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
+    users = UserSet.getInstance().getStatusUsers("ready1", BLOCK_SIZE);
     while ( users.size() > 0 ) {
       for (final User user : users) {
         logger.info("crawling " + user.uname + "'s follows.");
-        UserSet.getInstance().setDealing(user.uk, true);
+        UserSet.getInstance().setStatus(user.uk, "running1");
         synchronized (this) {
           waitForIdle();
           threadPool.execute(new CrawlWorker(this) {
             @Override
             public void crawl() {
               UserCrawler.crawlFollow(user.uk);
-              UserSet.getInstance().setCrawled(user.uk, true);
+              UserSet.getInstance().setStatus(user.uk, "ready2");
             }
           });
         }
         logger.info(user.uname + "'s follows crawled.");
       }
-      users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
+      users = UserSet.getInstance().getStatusUsers("ready1", BLOCK_SIZE);
       while ( users.size() == 0 ) {
-        final int uncrawledSize = UserSet.getInstance().uncrawledSize();
-        if ( uncrawledSize == 0 ) break;
-        synchronized (this) {
-          try {
-            wait();
-          } catch (InterruptedException e) {
-            logger.error(e);
+        if ( threadsNum > 0 ) {
+          synchronized (this) {
+            try {
+              wait();
+            } catch (InterruptedException e) {
+              logger.error(e);
+            }
           }
         }
-        users = UserSet.getInstance().getUndealingUsers(BLOCK_SIZE);
+        users = UserSet.getInstance().getStatusUsers("ready1", BLOCK_SIZE);
       }
     }
     join();

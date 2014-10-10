@@ -1,4 +1,7 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="Cloud-Disk-Search" default="resolve">
+  <property name="src" location="src" />
+  <property name="bin" location="bin" />
+  <property name="lib" location="lib" />
 
   <condition property="ivy.exclude.types" value="" else="source|javadoc">
     <isset property="fetch.sources.javadocs" />
@@ -8,4 +11,21 @@
   <target name="resolve" description="--> retrieve dependencies with ivy">
     <ivy:retrieve pattern="lib/[artifact]-[revision](-[classifier]).[ext]" />
   </target>
+
+  <path id="classpath">
+    <fileset dir="${lib}" includes="*.jar" />
+  </path>
+
+  <target name="compile" depends="resolve" description="--> compile">
+    <mkdir dir="${bin}" />
+    <copy todir="${bin}">
+      <fileset dir="${src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+    </copy>
+    <javac includeantruntime="false" srcdir="${src}" destdir="${bin}" classpathref="classpath" />
+  </target>
+
+  <target name="clean" description="--> clean up">
+    <delete dir="${bin}" />
+  </target>
+
 </project>

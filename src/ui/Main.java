@@ -28,7 +28,7 @@ class Args4J {
   boolean doIndex;
 
   @Option(name = "-search", usage = "Do Default Search. ex. -search \"物语 花\"")
-  String searchQuery = null;
+  String searchQuery;
 
   @Option(name = "-serve", usage = "Run The Searching Server.")
   boolean doServe;
@@ -40,7 +40,7 @@ class Args4J {
   boolean crawlFiles;
 
   @Option(name = "-stat", usage = "Statistics on db.")
-  boolean stat;
+  String stat;
 }
 
 public class Main {
@@ -73,8 +73,8 @@ public class Main {
     } else if ( args4j.crawlUsers ) {
       UserCrawler.crawl();
 
-    } else if ( args4j.stat ) {
-      System.out.println(UserSet.getInstance().uncrawledSize());
+    } else if ( args4j.stat != null ) {
+      System.out.println(UserSet.getInstance().statusSize(args4j.stat));
       System.out.println(UserSet.getInstance().size());
 
     } else if ( args4j.crawlFiles ) {

@@ -13,5 +13,7 @@ logs
 *.gz
 *.db
 
+*.swp
+
 # ant
 .ant-targets-build.xml

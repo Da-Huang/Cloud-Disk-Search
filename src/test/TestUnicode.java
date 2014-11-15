@@ -2,9 +2,6 @@ package test;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
-import crawl.IPList;
 import crawl.yun.Request;
 
 public class TestUnicode {

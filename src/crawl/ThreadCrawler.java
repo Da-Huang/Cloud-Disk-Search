@@ -41,12 +41,12 @@ public abstract class ThreadCrawler implements Runnable {
 
   /**
    * It's usage is as follows.<br>
-   * <code>
+   * <pre>
    * synchronized (this) {
    *   waitForIdle();
    *   // do something
    * }
-   * </code>
+   * </pre>
    */
   public void waitForIdle() {
     while ( threadsNum >= maxThreadsNum ) {

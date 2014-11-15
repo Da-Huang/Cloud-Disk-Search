@@ -20,43 +20,43 @@ public class UserThreadCrawler extends ThreadCrawler {
   public void run() {
     logger.entry();
     List<User> users;
-    final JSONObject hotType = UserCrawler.fetchHotType();
-    final JSONArray hots = hotType.getJSONArray("hot_type");
-    for (int i = 0; i < hots.size(); i ++) {
-      final JSONObject element = hots.getJSONObject(i);
-      final String name = element.getString("type_name");
-      final int type = hots.getJSONObject(i).getInt("type");
-      logger.info("saving " + name);
-      synchronized (this) {
-        waitForIdle();
-        threadPool.execute(new CrawlWorker(this) {
-          @Override
-          public void crawl() {
-            logger.entry(type);
-            UserCrawler.crawlFirst(type);
-            logger.exit();
-          }
-        });
-      }
-    }
-    join();
-    logger.trace("Hot crawling finished.");
-
-    users = UserSet.getInstance().getStatusUsers("ready1", Integer.MAX_VALUE);
-    for (final User user : users) {
-      logger.info("crawling " + user.uname + "'s fans.");
-      synchronized (this) {
-        waitForIdle();
-        threadPool.execute(new CrawlWorker(this) {
-          @Override
-          public void crawl() {
-            UserCrawler.crawlFan(user.uk);
-          }
-        });
-      }
-    }
-    join();
-    logger.trace("Hot fan crawling finished.");
+//    final JSONObject hotType = UserCrawler.fetchHotType();
+//    final JSONArray hots = hotType.getJSONArray("hot_type");
+//    for (int i = 0; i < hots.size(); i ++) {
+//      final JSONObject element = hots.getJSONObject(i);
+//      final String name = element.getString("type_name");
+//      final int type = hots.getJSONObject(i).getInt("type");
+//      logger.info("saving " + name);
+//      synchronized (this) {
+//        waitForIdle();
+//        threadPool.execute(new CrawlWorker(this) {
+//          @Override
+//          public void crawl() {
+//            logger.entry(type);
+//            UserCrawler.crawlFirst(type);
+//            logger.exit();
+//          }
+//        });
+//      }
+//    }
+//    join();
+//    logger.trace("Hot crawling finished.");
+//
+//    users = UserSet.getInstance().getStatusUsers("ready1", Integer.MAX_VALUE);
+//    for (final User user : users) {
+//      logger.info("crawling " + user.uname + "'s fans.");
+//      synchronized (this) {
+//        waitForIdle();
+//        threadPool.execute(new CrawlWorker(this) {
+//          @Override
+//          public void crawl() {
+//            UserCrawler.crawlFan(user.uk);
+//          }
+//        });
+//      }
+//    }
+//    join();
+//    logger.trace("Hot fan crawling finished.");
 
     final int BLOCK_SIZE = 1000;
     users = UserSet.getInstance().getStatusUsers("ready1", BLOCK_SIZE);

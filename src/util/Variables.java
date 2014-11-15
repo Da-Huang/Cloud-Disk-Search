@@ -28,6 +28,7 @@ public class Variables {
 
   public static void main(String[] args) {
     Variables.getInstance();
+    logger.debug(Variables.getInstance().getProperty("proxylist"));
     logger.error("test");
   }
 

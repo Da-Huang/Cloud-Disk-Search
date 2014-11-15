@@ -18,7 +18,7 @@ import net.sf.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import crawl.IPList;
+import crawl.ProxyList;
 
 
 public class Request {
@@ -57,7 +57,7 @@ public class Request {
     JSONObject res = null;
     int tryTimes = 0;
     while ( res == null ) {
-      final int ipd = IPList.getInstance().open();
+      final int ipd = ProxyList.getInstance().open();
       try {
         res = requestJSON(urlStr, args, ipd);
       } catch (Exception e) {
@@ -69,7 +69,7 @@ public class Request {
           logger.error(e1);
         }
       }
-      IPList.getInstance().close(ipd);
+      ProxyList.getInstance().close(ipd);
     }
     return res;
   }
@@ -78,7 +78,7 @@ public class Request {
     String res = null;
     int tryTimes = 0;
     while ( res == null ) {
-      final int ipd = IPList.getInstance().open();
+      final int ipd = ProxyList.getInstance().open();
       try {
         res = requestPlain(urlStr, args, ipd);
       } catch (Exception e) {
@@ -91,7 +91,7 @@ public class Request {
           logger.error(e1);
         }
       }
-      IPList.getInstance().close(ipd);
+      ProxyList.getInstance().close(ipd);
     }
     return res;
   }
@@ -102,7 +102,7 @@ public class Request {
     InputStream in = null;
     HttpURLConnection conn = null;
 
-    final Entry<String, Integer> address = IPList.getInstance().get(ipd);
+    final Entry<String, Integer> address = ProxyList.getInstance().get(ipd);
     if ( address != null ) {
       final String ip = address.getKey();
       final int port = address.getValue();

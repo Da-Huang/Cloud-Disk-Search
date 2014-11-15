@@ -57,9 +57,9 @@ public class Request {
     JSONObject res = null;
     int tryTimes = 0;
     while ( res == null ) {
-      final int ipd = ProxyList.getInstance().open();
+      final int proxyd = ProxyList.getInstance().open();
       try {
-        res = requestJSON(urlStr, args, ipd);
+        res = requestJSON(urlStr, args, proxyd);
       } catch (Exception e) {
         ++ tryTimes;
         logger.error(e + " --- " + tryTimes);
@@ -69,7 +69,7 @@ public class Request {
           logger.error(e1);
         }
       }
-      ProxyList.getInstance().close(ipd);
+      ProxyList.getInstance().close(proxyd);
     }
     return res;
   }
@@ -78,9 +78,9 @@ public class Request {
     String res = null;
     int tryTimes = 0;
     while ( res == null ) {
-      final int ipd = ProxyList.getInstance().open();
+      final int proxyd = ProxyList.getInstance().open();
       try {
-        res = requestPlain(urlStr, args, ipd);
+        res = requestPlain(urlStr, args, proxyd);
       } catch (Exception e) {
         ++ tryTimes;
         logger.error(e + " --- " + tryTimes);
@@ -91,18 +91,18 @@ public class Request {
           logger.error(e1);
         }
       }
-      ProxyList.getInstance().close(ipd);
+      ProxyList.getInstance().close(proxyd);
     }
     return res;
   }
 
-  static private String request(String urlStr, int ipd) throws Exception {
+  static private String request(String urlStr, int proxyd) throws Exception {
     final URL url = new URL(urlStr);
     logger.info(url);
     InputStream in = null;
     HttpURLConnection conn = null;
 
-    final Entry<String, Integer> address = ProxyList.getInstance().get(ipd);
+    final Entry<String, Integer> address = ProxyList.getInstance().get(proxyd);
     if ( address != null ) {
       final String ip = address.getKey();
       final int port = address.getValue();
@@ -151,12 +151,12 @@ public class Request {
     return type;
   }
 
-  static private JSONObject requestJSON(String urlStr, Map<String, String> args, int ipd) throws Exception {
-    String plain = requestPlain(urlStr, args, ipd);
+  static private JSONObject requestJSON(String urlStr, Map<String, String> args, int proxyd) throws Exception {
+    String plain = requestPlain(urlStr, args, proxyd);
     return JSONObject.fromObject(plain);
   }
 
-  static private String requestPlain(String urlStr, Map<String, String> args, int ipd) throws Exception {
+  static private String requestPlain(String urlStr, Map<String, String> args, int proxyd) throws Exception {
     urlStr += "?";
     for (String key : args.keySet()) {
       urlStr += key;
@@ -164,7 +164,7 @@ public class Request {
       urlStr += URLEncoder.encode(args.get(key), "utf8");
       urlStr += "&";
     }
-    String response = request(urlStr, ipd);
+    String response = request(urlStr, proxyd);
     return response;
   }
 }

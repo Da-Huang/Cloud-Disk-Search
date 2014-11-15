@@ -80,8 +80,9 @@ public class ProxyList {
     mapping[proxyd] = availables;
     reverseMapping[availables] = proxyd;
 
-    logger.trace("availables=" + availables);
-    return availables;
+//    logger.fatal("open:" + new ArrayList<>(queue));
+    logger.trace("proxyd=" + proxyd + ",availables=" + availables);
+    return proxyd;
   }
 
   synchronized public Entry<String, Integer> get(int proxyd) {
@@ -90,11 +91,11 @@ public class ProxyList {
 
   /**
    * Close the proxy descriptor.
-   * @param ipd proxy descriptor
+   * @param proxyd proxy descriptor
    */
   synchronized public void close(int proxyd) {
-    logger.trace("ipd=" + proxyd + ",availables=" + availables);
     final int index = mapping[proxyd];
+    logger.trace("proxyd=" + proxyd + ",index=" + index + ",availables=" + availables);
     final Entry<String, Integer> tmp = proxyLists.get(index);
     proxyLists.set(index, proxyLists.get(availables));
     proxyLists.set(availables, tmp);
@@ -102,6 +103,7 @@ public class ProxyList {
     reverseMapping[index] = reverseMapping[availables];
 
     queue.add(proxyd);
+//    logger.fatal("close:" + new ArrayList<>(queue));
     availables ++;
     notify();
   }

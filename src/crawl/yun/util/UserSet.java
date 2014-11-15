@@ -22,7 +22,12 @@ public class UserSet {
 
   private static UserSet instance = null;
   public static UserSet getInstance() {
-    if ( instance == null ) instance = new UserSet();
+    if ( instance == null ) {
+      synchronized (UserSet.class) {
+        if ( instance == null )
+          instance = new UserSet();
+      }
+    }
     return instance;
   }
   private UserSet() {

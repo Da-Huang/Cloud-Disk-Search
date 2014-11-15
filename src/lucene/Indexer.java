@@ -34,11 +34,16 @@ import database.FileType;
 
 public class Indexer {
   private static final Logger logger = LogManager.getLogger(Indexer.class);
-  private static Indexer INSTANCE = null;
+  private static Indexer instance = null;
   private Indexer() {};
   public static Indexer getInstance() {
-    if ( INSTANCE == null ) INSTANCE = new Indexer();
-    return INSTANCE;
+    if ( instance == null ) {
+      synchronized (Indexer.class) {
+        if ( instance == null )
+          instance = new Indexer();
+      }
+    }
+    return instance;
   }
 
   public static void main(String[] args) throws SQLException, IOException {

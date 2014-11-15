@@ -13,10 +13,15 @@ import org.apache.logging.log4j.Logger;
  */
 public class Variables {
   private static final Logger logger = LogManager.getLogger(Variables.class);
-  private static Variables INSTANCE = null;
+  private static Variables instance = null;
   public static Variables getInstance() {
-    if ( INSTANCE == null ) INSTANCE = new Variables();
-    return INSTANCE;
+    if ( instance == null ) {
+      synchronized (Variables.class) {
+        if ( instance == null )
+          instance = new Variables();
+      }
+    }
+    return instance;
   }
   private Variables() {
     try {

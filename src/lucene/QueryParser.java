@@ -22,11 +22,16 @@ import database.FileType;
 
 public class QueryParser {
   private static final Logger logger = LogManager.getLogger(QueryParser.class);
-  private static QueryParser INSTANCE = null;
+  private static QueryParser instance = null;
   private QueryParser() {}
   public static QueryParser getInstance() {
-    if ( INSTANCE == null ) INSTANCE = new QueryParser();
-    return INSTANCE;
+    if ( instance == null ) {
+      synchronized (QueryParser.class) {
+        if ( instance == null )
+          instance = new QueryParser();
+      }
+    }
+    return instance;
   }
 
   public Query parseHot(String fileType) {

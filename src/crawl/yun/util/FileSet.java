@@ -17,8 +17,12 @@ public class FileSet {
 
   private static FileSet instance = null;
   public static FileSet getInstance() {
-    if ( instance == null )
-      instance = new FileSet();
+    if ( instance == null ) {
+      synchronized (FileSet.class) {
+        if ( instance == null )
+          instance = new FileSet();
+      }
+    }
     return instance;
   }
   private FileSet() {

@@ -25,11 +25,16 @@ import util.Variables;
 public class Searcher {
   private static final Logger logger = LogManager.getLogger(Searcher.class);
   private Searcher() {}
-  private static Searcher INSTANCE = null;
+  private static Searcher instance = null;
   public static Searcher getInstance() {
-    if ( INSTANCE == null ) INSTANCE = new Searcher();
-    return INSTANCE;
-  };
+    if ( instance == null ) {
+      synchronized (Searcher.class) {
+        if ( instance == null )
+          instance = new Searcher();
+      }
+    }
+    return instance;
+  }
 
   public static void main(String[] args) throws IOException, ParseException {
     final IndexReader reader = DirectoryReader.open(FSDirectory.open(

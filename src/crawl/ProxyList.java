@@ -21,8 +21,12 @@ public class ProxyList {
   private static final Logger logger = LogManager.getLogger(ProxyList.class);
   private static ProxyList instance = null;
   public static ProxyList getInstance() {
-    if ( instance == null )
-      instance = new ProxyList();
+    if ( instance == null ) {
+      synchronized (ProxyList.class) {
+        if ( instance == null )
+          instance = new ProxyList();
+      }
+    }
     return instance;
   }
   private ProxyList() {
@@ -102,7 +106,7 @@ public class ProxyList {
     mapping[reverseMapping[availables]] = index;
     reverseMapping[index] = reverseMapping[availables];
 
-    queue.add(proxyd);
+    queue.offer(proxyd);
 //    logger.fatal("close:" + new ArrayList<>(queue));
     availables ++;
     notify();

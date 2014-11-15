@@ -41,14 +41,18 @@ public class DBConnection {
 
   public static Connection getConnection() throws SQLException {
     if ( ds == null ) {
-      final Properties prop = Variables.getInstance().getProperties();
-      ds = new BasicDataSource();
-      ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
-      ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
-      ds.setUsername(prop.getProperty("username"));
-      ds.setPassword(prop.getProperty("password"));
-      ds.setUrl(prop.getProperty("url"));
-      ds.setDriverClassName(prop.getProperty("driverClassName"));
+      synchronized (DBConnection.class) {
+        if ( ds == null ) {
+          final Properties prop = Variables.getInstance().getProperties();
+          ds = new BasicDataSource();
+          ds.setMaxIdle(Integer.parseInt(prop.getProperty("maxIdle")));
+          ds.setMaxActive(Integer.parseInt(prop.getProperty("maxActive")));
+          ds.setUsername(prop.getProperty("username"));
+          ds.setPassword(prop.getProperty("password"));
+          ds.setUrl(prop.getProperty("url"));
+          ds.setDriverClassName(prop.getProperty("driverClassName"));
+        }
+      }
     }
     return ds.getConnection();
   }

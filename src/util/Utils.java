@@ -30,7 +30,7 @@ public class Utils {
     } catch (IOException e) {
       logger.error("Compress Error.");
     }
-      return null;
+    return null;
   }
 
   public static String compress(String str) {

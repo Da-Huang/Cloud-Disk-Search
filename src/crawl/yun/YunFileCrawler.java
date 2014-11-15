@@ -17,8 +17,8 @@ public class YunFileCrawler {
   private static final Logger logger = LogManager.getLogger(YunFileCrawler.class);
 
   public static void main(String[] args) {
-//    YunFileCrawler.crawl();
-    YunFileCrawler.crawl(3158078488L);
+    YunFileCrawler.crawl();
+//    YunFileCrawler.crawl(3158078488L);
   }
 
   /**

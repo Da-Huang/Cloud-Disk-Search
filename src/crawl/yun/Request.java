@@ -125,7 +125,7 @@ public class Request {
     if ( encoding != null && encoding.equalsIgnoreCase("gzip") ) in = new GZIPInputStream(in);
     final String type = conn.getHeaderField("Content-Type");
     final String charset = type == null ? "utf8" : getCharset(type);
-    logger.debug(type);
+    logger.debug(charset);
     final BufferedReader br = new BufferedReader(new InputStreamReader(in, charset));
     final StringBuffer response = new StringBuffer();
     String line;
@@ -144,6 +144,7 @@ public class Request {
   static private String getCharset(String type) {
     type = type.toLowerCase();
     int index = type.indexOf("charset=");
+    if ( index < 0 ) return "utf8";
     type = type.substring(index + "charset=".length());
     index = type.indexOf(";");
     if ( index >= 0 ) type = type.substring(0, index);

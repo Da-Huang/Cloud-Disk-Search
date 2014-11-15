@@ -78,7 +78,7 @@ public class UserThreadCrawler extends ThreadCrawler {
       }
       users = UserSet.getInstance().getStatusUsers("ready1", BLOCK_SIZE);
       while ( users.size() == 0 ) {
-        if ( threadsNum > 0 ) {
+        while ( threadsNum > 0 ) {
           synchronized (this) {
             try {
               wait();

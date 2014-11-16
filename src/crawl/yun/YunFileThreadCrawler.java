@@ -19,6 +19,7 @@ public class YunFileThreadCrawler extends ThreadCrawler {
     final int BLOCK_SIZE = 1000;
     users = UserSet.getInstance().getStatusUsers("ready2", BLOCK_SIZE);
     while ( users.size() > 0 ) {
+      logger.info("users.size:" + users.size());
       for (final User user : users) {
         logger.info("crawling " + user.uname + "'s files.");
         UserSet.getInstance().setStatus(user.uk, "running2");
@@ -28,15 +29,15 @@ public class YunFileThreadCrawler extends ThreadCrawler {
             @Override
             public void crawl() {
               YunFileCrawler.crawl(user.uk);
+              logger.info(user.uname + "'s files crawled.");
               UserSet.getInstance().setStatus(user.uk, "done");
             }
           });
         }
-        logger.info(user.uname + "'s files crawled.");
       }
       users = UserSet.getInstance().getStatusUsers("ready2", BLOCK_SIZE);
       while ( users.size() == 0 ) {
-        while ( threadsNum > 0 ) {
+        if ( threadsNum > 0 ) {
           synchronized (this) {
             try {
               wait();
@@ -44,8 +45,12 @@ public class YunFileThreadCrawler extends ThreadCrawler {
               logger.error(e);
             }
           }
+          users = UserSet.getInstance().getStatusUsers("ready2", BLOCK_SIZE);
+
+        } else {
+          users = UserSet.getInstance().getStatusUsers("ready2", BLOCK_SIZE);
+          break;
         }
-        users = UserSet.getInstance().getStatusUsers("ready2", BLOCK_SIZE);
       }
     }
     join();

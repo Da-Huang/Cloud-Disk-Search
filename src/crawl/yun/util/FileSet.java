@@ -1,10 +1,12 @@
 package crawl.yun.util;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,15 +34,17 @@ public class FileSet {
       stmt.executeUpdate(""
           + "CREATE TABLE IF NOT EXISTS `files` ("
           + "  `uk` BIGINT,"
-          + "  `md5` VARCHAR(32),"
+          + "  `md5` CHAR(32),"
           + "  `title` TEXT,"
           + "  `url` TEXT,"
+          + "  `urlmd5` CHAR(32),"
           + "  `size` BIGINT,"
           + "  `desc` TEXT,"
           + "  `time` BIGINT,"
           + "  `downloads` INT,"
           + "  `visits` INT,"
-          + "  `saves` INT"
+          + "  `saves` INT,"
+          + "  PRIMARY KEY (`uk`,`urlmd5`)"
           + ")");
       try {
         stmt.executeUpdate(""
@@ -105,18 +109,38 @@ public class FileSet {
     }
   }
 
+  public boolean add(YunFile file) {
+    return add(file.uk, file.md5, file.title, file.url, file.size,
+        file.desc, file.time, file.downloads, file.visits, file.saves);
+  }
+
   public boolean add(long uk, String md5, String title, String url, long size,
       String desc, long time, int downloads, int visits, int saves) {
     logger.entry(uk, md5, title, url, size, desc, downloads, visits, saves);
     boolean res = true;
     try {
-      Connection conn = DBConnection.getConnection();
-      Statement stmt = conn.createStatement();
-      stmt.executeUpdate(String.format(""
-          + "INSERT INTO `files` (`uk`, `md5`, `title`, `url`, `size`, "
+      final Connection conn = DBConnection.getConnection();
+      final PreparedStatement stmt = conn.prepareStatement(""
+          + "INSERT INTO `files` (`uk`, `md5`, `title`, `url`, `urlmd5`, `size`, "
           + "`desc`, `time`, `downloads`, `visits`, `saves`) "
-          + "VALUES (%d, '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d)",
-          uk, md5, title, url, size, desc, time, downloads, visits, saves));
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      try {
+        stmt.setLong(1, uk);
+        stmt.setString(2, md5);
+        stmt.setString(3, title);
+        stmt.setString(4, url);
+        stmt.setString(5, DigestUtils.md5Hex(url));
+        stmt.setLong(6, size);
+        stmt.setString(7, desc);
+        stmt.setLong(8, time);
+        stmt.setInt(9, downloads);
+        stmt.setInt(10, visits);
+        stmt.setInt(11, saves);
+        stmt.executeUpdate();
+      } catch (SQLException e) {
+        logger.error(e + " : <" + uk + ":" + url + ">");
+        res = false;
+      }
       stmt.close();
       conn.close();
     } catch (SQLException e) {

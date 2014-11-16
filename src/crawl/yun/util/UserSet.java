@@ -1,6 +1,7 @@
 package crawl.yun.util;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -89,11 +90,18 @@ public class UserSet {
     boolean res = true;
     try {
       final Connection conn = DBConnection.getConnection();
-      final Statement stmt = conn.createStatement();
+//      final Statement stmt = conn.createStatement();
+      final PreparedStatement stmt = conn.prepareStatement(""
+          + "INSERT INTO `users` (`uk`, `uname`, `intro`, `follows`, `fans`, `shares`) "
+          + "VALUES (?, ?, ?, ?, ?, ?)");
       try {
-        stmt.executeUpdate(String.format(""
-            + "INSERT INTO `users` (`uk`, `uname`, `intro`, `follows`, `fans`, `shares`) "
-            + "VALUES (%d, '%s', '%s', %d, %d, %d)", uk, uname, intro, follows, fans, shares));
+        stmt.setLong(1, uk);
+        stmt.setString(2, uname);
+        stmt.setString(3, intro);
+        stmt.setInt(4, follows);
+        stmt.setInt(5, fans);
+        stmt.setInt(6, shares);
+        stmt.executeUpdate();
       } catch (SQLException e) {
         logger.error(e + " : <" + uk + ":" + uname + ">");
         res = false;

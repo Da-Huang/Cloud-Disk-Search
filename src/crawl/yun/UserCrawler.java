@@ -30,7 +30,7 @@ public class UserCrawler {
     args.put("type_id", String.valueOf(type));
     args.put("start", String.valueOf(start));
     args.put("limit", String.valueOf(limit));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   /**
@@ -43,7 +43,7 @@ public class UserCrawler {
     args.put("query_uk", String.valueOf(uk));
     args.put("start", String.valueOf(start));
     args.put("limit", String.valueOf(limit));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   /**
@@ -56,14 +56,14 @@ public class UserCrawler {
     args.put("query_uk", String.valueOf(uk));
     args.put("start", String.valueOf(start));
     args.put("limit", String.valueOf(limit));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   static public JSONObject fetchHotType() {
     logger.entry();
     final String urlBase = "http://yun.baidu.com/pcloud/friend/gethottype";
     final Map<String, String> args = new HashMap<String, String>();
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   static public void crawlFirst(int type) {

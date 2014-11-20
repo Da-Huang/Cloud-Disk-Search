@@ -1,4 +1,4 @@
-package crawl.yun;
+package crawl;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -24,8 +24,19 @@ import crawl.ProxyList;
 public class Request {
   private static final Logger logger = LogManager.getLogger(Request.class);
 
-  private static final Map<String, String> HEADER = new HashMap<>();
-  static {
+  private static Request instance = null;
+  public static Request getInstance() {
+    if ( instance == null ) {
+      synchronized (Request.class) {
+        if ( instance == null )
+          instance = new Request();
+      }
+    }
+    return instance;
+  }
+  
+  protected Request() {
+    HEADER = new HashMap<>();
     HEADER.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
     HEADER.put("Accept-Encoding", "gzip,deflate,sdch");
     HEADER.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4,zh-TW;q=0.2");
@@ -36,24 +47,10 @@ public class Request {
     HEADER.put("Referer", "http://yun.baidu.com/");
     HEADER.put("User-Agent", "MMozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36");
   }
-
-  static public JSONObject requestForceYun(String urlStr, Map<String, String> args) {
-    JSONObject res = requestJSONForce(urlStr, args);
-    int tryTimes = 0;
-    while ( res.containsKey("errno") && res.getInt("errno") == -55 ) {
-      ++ tryTimes;
-      logger.error("request json errno -55. redo -- " + tryTimes);
-      try {
-        Thread.sleep(10000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      res = requestJSONForce(urlStr, args);
-    }
-    return res;
-  }
-
-  static public JSONObject requestJSONForce(String urlStr, Map<String, String> args) {
+  
+  protected final Map<String, String> HEADER;
+  
+  public JSONObject requestJSONForce(String urlStr, Map<String, String> args) {
     JSONObject res = null;
     int tryTimes = 0;
     while ( res == null ) {
@@ -74,7 +71,7 @@ public class Request {
     return res;
   }
 
-  static public String requestPlainForce(String urlStr, Map<String, String> args) {
+  public String requestPlainForce(String urlStr, Map<String, String> args) {
     String res = null;
     int tryTimes = 0;
     while ( res == null ) {
@@ -96,7 +93,7 @@ public class Request {
     return res;
   }
 
-  static private String request(String urlStr, int proxyd) throws Exception {
+  private String request(String urlStr, int proxyd) throws Exception {
     final URL url = new URL(urlStr);
     logger.info(url);
     InputStream in = null;
@@ -151,12 +148,12 @@ public class Request {
     return type;
   }
 
-  static private JSONObject requestJSON(String urlStr, Map<String, String> args, int proxyd) throws Exception {
+  private JSONObject requestJSON(String urlStr, Map<String, String> args, int proxyd) throws Exception {
     String plain = requestPlain(urlStr, args, proxyd);
     return JSONObject.fromObject(plain);
   }
 
-  static private String requestPlain(String urlStr, Map<String, String> args, int proxyd) throws Exception {
+  private String requestPlain(String urlStr, Map<String, String> args, int proxyd) throws Exception {
     urlStr += "?";
     for (String key : args.keySet()) {
       urlStr += key;

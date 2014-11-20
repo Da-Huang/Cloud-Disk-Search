@@ -32,7 +32,7 @@ public class YunFileCrawler {
     args.put("query_uk", String.valueOf(uk));
     args.put("start", String.valueOf(start));
     args.put("limit", String.valueOf(limit));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   /**
@@ -52,7 +52,7 @@ public class YunFileCrawler {
     args.put("shareid", String.valueOf(sid));
     args.put("dir", dir);
     args.put("page", String.valueOf(page));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   static private String fetchParentPath(long uk, long sid) {
@@ -60,7 +60,7 @@ public class YunFileCrawler {
     final Map<String, String> args = new HashMap<String, String>();
     args.put("uk", String.valueOf(uk));
     args.put("shareid", String.valueOf(sid));
-    final String page = Request.requestPlainForce(urlBase, args);
+    final String page = YunRequest.getInstance().requestPlainForce(urlBase, args);
     int begin = page.indexOf("parent_path\\\":\\\"");
     if ( begin < 0 ) return null;
     begin += "parent_path\\\":\\\"".length();
@@ -86,7 +86,7 @@ public class YunFileCrawler {
     args.put("album_id", String.valueOf(aid));
     args.put("start", String.valueOf(start));
     args.put("limit", String.valueOf(limit));
-    return Request.requestForceYun(urlBase, args);
+    return YunRequest.getInstance().requestForceYun(urlBase, args);
   }
 
   static private void saveFilesInTopLevel(JSONObject record) {
